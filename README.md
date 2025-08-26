@@ -58,8 +58,6 @@
   <a href="https://discord.com/users/el_bulbol" target="_blank">
     <img src="https://raw.githubusercontent.com/maurodesouza/profile-readme-generator/master/src/assets/icons/social/discord/default.svg" width="37" height="22" alt="discord logo"  />
   </a>
-  <a href="https://www.linkedin.com/in/belal-alshref-09b1b9323/" target="_blank">
-    <img src="https://raw.githubusercontent.com/maurodesouza/profile-readme-generator/master/src/assets/icons/social/linkedin/default.svg" width="37" height="22" alt="linkedin logo"  />
   </a>
   <a href="mailto:belal.alshrif@gmail.com" target="_blank">
     <img src="https://raw.githubusercontent.com/maurodesouza/profile-readme-generator/master/src/assets/icons/social/gmail/default.svg" width="37" height="22" alt="gmail logo"  />
