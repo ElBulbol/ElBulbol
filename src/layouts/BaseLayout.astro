@@ -33,5 +33,80 @@ const {
     <main id="site-content">
       <slot />
     </main>
+
+    <style>
+      .terminal-heading-cursor { color:var(--accent); display:inline-block; font-weight:400; margin-left:.08em; opacity:0; }
+      .terminal-heading-cursor.is-active { animation:terminal-heading-blink .7s steps(1,end) infinite; opacity:1; }
+      @keyframes terminal-heading-blink { 50% { opacity:0; } }
+      @media (prefers-reduced-motion:reduce) { .terminal-heading-cursor.is-active { animation:none; } }
+    </style>
+
+    <script>
+      const reduceHeadingMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const graphicalSite = document.querySelector('#mode-graphical');
+
+      if (!reduceHeadingMotion && graphicalSite) {
+        const headings = [...graphicalSite.querySelectorAll('.heading-text, .footer-heading h2')] as HTMLElement[];
+        const sections = [...new Set(headings.map((heading) => heading.closest('section, footer')).filter(Boolean))] as HTMLElement[];
+        let activeSection: HTMLElement | null = null;
+
+        const setActiveSection = (section: HTMLElement) => {
+          activeSection = section;
+          headings.forEach((heading) => {
+            const cursor = heading.querySelector('.terminal-heading-cursor');
+            cursor?.classList.toggle('is-active', heading.closest('section, footer') === activeSection);
+          });
+        };
+
+        const syncActiveSection = () => {
+          const marker = window.innerHeight * .42;
+          const section = sections.find((item) => {
+            const bounds = item.getBoundingClientRect();
+            return bounds.top <= marker && bounds.bottom > marker;
+          });
+          if (section) setActiveSection(section);
+        };
+
+        const typeHeading = (heading: HTMLElement) => {
+          if (heading.dataset.typed === 'true') return;
+          heading.dataset.typed = 'true';
+
+          const command = heading.textContent?.trim() || '';
+          if (!command) return;
+
+          heading.setAttribute('aria-label', command);
+          const typedText = document.createTextNode('');
+          const cursor = document.createElement('span');
+          cursor.className = 'terminal-heading-cursor';
+          cursor.classList.toggle('is-active', heading.closest('section, footer') === activeSection);
+          cursor.setAttribute('aria-hidden', 'true');
+          cursor.textContent = '_';
+          heading.replaceChildren(typedText, cursor);
+
+          let index = 0;
+          const typeNext = () => {
+            typedText.textContent = command.slice(0, index++);
+            if (index <= command.length) window.setTimeout(typeNext, 14);
+          };
+          typeNext();
+        };
+
+        const headingObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            typeHeading(entry.target as HTMLElement);
+            headingObserver.unobserve(entry.target);
+          });
+        }, { rootMargin: '0px 0px -12% 0px', threshold: 0.2 });
+
+        const sectionObserver = new IntersectionObserver((entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) syncActiveSection();
+        }, { threshold: [0, .2, .5] });
+
+        headings.forEach((heading) => headingObserver.observe(heading));
+        sections.forEach((section) => sectionObserver.observe(section));
+        window.addEventListener('scroll', syncActiveSection, { passive: true });
+      }
+    </script>
   </body>
 </html>

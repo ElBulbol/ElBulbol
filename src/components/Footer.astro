@@ -1,0 +1,94 @@
+---
+import { contacts } from '../data/contacts.js';
+
+const isPrimaryContact = (label: string) => label === 'email' || label === 'discord';
+---
+
+<footer id="contact" class="site-footer" aria-label="Contact links">
+  <div class="footer-container">
+    <div class="footer-heading">
+      <span class="terminal-prompt">[belal@portfolio ~]$</span><h2>cat ~/.contact</h2>
+    </div>
+
+    <div class="contact-output" data-contact-output>
+      {contacts.map((contact, index) => (
+        <div class:list={['contact-card', { 'is-primary': isPrimaryContact(contact.label) }]} data-contact-row={index}>
+          {contact.label === 'email' ? (
+            <a class="contact-link" href={contact.url} aria-label={`Email Belal at ${contact.value}`}>
+              <span class="contact-symbol" aria-hidden="true">
+                <svg class="contact-logo icon-email" viewBox="0 0 24 24" focusable="false">
+                  <path class="logo-fill" d="M3 5.5h18v13H3zM3.5 6l8.5 7 8.5-7" />
+                  <path class="logo-trace" d="M3 5.5h18v13H3zM3.5 6l8.5 7 8.5-7" />
+                </svg>
+              </span>
+              <span class="contact-label">{contact.label}</span><span class="contact-value">{contact.value}</span>
+            </a>
+          ) : (
+            <a class="contact-link" href={contact.url} target="_blank" rel="noopener noreferrer" aria-label={`Open Belal's ${contact.label} profile`}>
+              <span class="contact-symbol" aria-hidden="true">
+                {contact.label === 'github' && <svg class="contact-logo icon-github" viewBox="0 0 24 24" focusable="false"><path class="logo-fill" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" /><path class="logo-trace" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" /></svg>}
+                {contact.label === 'linkedin' && <svg class="contact-logo icon-linkedin" viewBox="0 0 24 24" focusable="false"><path class="logo-fill" d="M20.451 20.451h-3.554V14.87c0-1.33-.027-3.04-1.852-3.04-1.853 0-2.136 1.445-2.136 2.939v5.682H9.355V8.999h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 110-4.125 2.062 2.062 0 010 4.125zM7.114 20.451H3.56V8.999h3.554v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" /><path class="logo-trace" d="M20.451 20.451h-3.554V14.87c0-1.33-.027-3.04-1.852-3.04-1.853 0-2.136 1.445-2.136 2.939v5.682H9.355V8.999h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 110-4.125 2.062 2.062 0 010 4.125zM7.114 20.451H3.56V8.999h3.554v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" /></svg>}
+                {contact.label === 'tryhackme' && <span class="tryhackme-logo"><img src="https://tryhackme.com/img/logo/THMlogo-gray_scale.png" alt="" /></span>}
+                {contact.label === 'discord' && <svg class="contact-logo icon-discord" viewBox="0 0 24 24" focusable="false"><path class="logo-fill" d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.211.375-.445.865-.608 1.25a15.35 15.35 0 0 0-5.487 0c-.164-.394-.406-.875-.618-1.25a.077.077 0 0 0-.078-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.028C.533 9.046-.319 13.58.1 18.058a.082.082 0 0 0 .031.056c2.053 1.508 4.041 2.423 5.993 3.03a.078.078 0 0 0 .084-.028c.462-.63.873-1.295 1.226-1.994a.077.077 0 0 0-.042-.106 12.3 12.3 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .078-.011c3.927 1.793 8.18 1.793 12.06 0a.074.074 0 0 1 .079.01c.12.099.246.198.373.292a.077.077 0 0 1-.007.128c-.598.343-1.22.644-1.873.891a.077.077 0 0 0-.04.107c.36.698.771 1.362 1.225 1.993a.076.076 0 0 0 .084.029c1.961-.607 3.95-1.522 6.002-3.03a.077.077 0 0 0 .031-.055c.5-5.177-.838-9.674-3.548-13.66a.061.061 0 0 0-.032-.029ZM8.02 15.331c-1.182 0-2.157-1.086-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.419 0 1.333-.956 2.419-2.157 2.419Zm7.975 0c-1.183 0-2.157-1.086-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.419 0 1.333-.946 2.419-2.157 2.419Z" /><path class="logo-trace" d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.211.375-.445.865-.608 1.25a15.35 15.35 0 0 0-5.487 0c-.164-.394-.406-.875-.618-1.25a.077.077 0 0 0-.078-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.028C.533 9.046-.319 13.58.1 18.058a.082.082 0 0 0 .031.056c2.053 1.508 4.041 2.423 5.993 3.03a.078.078 0 0 0 .084-.028c.462-.63.873-1.295 1.226-1.994a.077.077 0 0 0-.042-.106 12.3 12.3 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .078-.011c3.927 1.793 8.18 1.793 12.06 0a.074.074 0 0 1 .079.01c.12.099.246.198.373.292a.077.077 0 0 1-.007.128c-.598.343-1.22.644-1.873.891a.077.077 0 0 0-.04.107c.36.698.771 1.362 1.225 1.993a.076.076 0 0 0 .084.029c1.961-.607 3.95-1.522 6.002-3.03a.077.077 0 0 0 .031-.055c.5-5.177-.838-9.674-3.548-13.66a.061.061 0 0 0-.032-.029ZM8.02 15.331c-1.182 0-2.157-1.086-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.419 0 1.333-.956 2.419-2.157 2.419Zm7.975 0c-1.183 0-2.157-1.086-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.419 0 1.333-.946 2.419-2.157 2.419Z" /></svg>}
+              </span>
+              <span class="contact-label">{contact.label}</span><span class="contact-value">{contact.value}</span><span class="external-mark" aria-hidden="true">↗</span>
+            </a>
+          )}
+        </div>
+      ))}
+    </div>
+
+    <p class="closing-line" aria-live="polite"><span>[belal@portfolio ~]$</span> <span data-closing-copy>echo "thanks for stopping by"</span></p>
+  </div>
+</footer>
+
+<style>
+  .site-footer { background:var(--bg-panel-solid); border-top:1px solid var(--border); padding:4rem 2rem 2.5rem; }
+  .footer-container { margin:0 auto; max-width:1320px; text-align:center; width:100%; }
+  .footer-heading { align-items:baseline; display:flex; gap:.7rem; justify-content:center; }.terminal-prompt { color:var(--accent); font-size:clamp(.8rem,1.2vw,1rem); font-weight:700; white-space:nowrap; }.footer-heading h2 { color:var(--text-primary); font-size:clamp(1.25rem,2vw,1.65rem); margin:0; }
+  .contact-output { display:flex; flex-wrap:wrap; gap:1.25rem 1.75rem; justify-content:center; margin:2.25rem auto 0; max-width:980px; }.contact-card { width:142px; }.contact-link { align-items:center; color:var(--text-muted); display:flex; flex-direction:column; gap:.4rem; position:relative; text-decoration:none; transition:color 180ms ease,transform 180ms ease; }.contact-link:hover,.contact-link:focus-visible { color:var(--text-primary); outline:none; transform:translateY(-3px); }.contact-symbol { align-items:center; display:grid; height:58px; justify-items:center; transition:filter 180ms ease,transform 180ms ease; width:58px; }.contact-logo { grid-area:1 / 1; height:42px; overflow:visible; width:42px; }.logo-fill { fill:var(--text-primary); stroke:var(--text-primary); stroke-linecap:round; stroke-linejoin:round; }.icon-email .logo-fill { fill:none; stroke-width:1.45; }.logo-trace { animation:none; fill:var(--accent); opacity:0; stroke:none; }.icon-email .logo-trace { fill:none; stroke:var(--accent); stroke-width:1.7; }.tryhackme-logo { display:grid; height:42px; place-items:center; position:relative; width:64px; }.tryhackme-logo img { filter:brightness(0) invert(1) opacity(.84); height:100%; max-width:100%; object-fit:contain; }.tryhackme-logo::after { animation:none; background:var(--accent); content:''; inset:0; mask:center / contain no-repeat url('https://tryhackme.com/img/logo/THMlogo-gray_scale.png'); -webkit-mask:center / contain no-repeat url('https://tryhackme.com/img/logo/THMlogo-gray_scale.png'); opacity:0; position:absolute; }.contact-label { color:var(--text-primary); font-size:12px; font-weight:600; text-transform:uppercase; }.contact-value { color:var(--text-muted-2); font-size:10px; line-height:1.5; overflow-wrap:anywhere; }.external-mark { color:var(--text-muted-2); font-size:11px; position:absolute; right:7px; top:44px; transition:color 180ms ease,transform 180ms ease; }.contact-link:hover .contact-symbol,.contact-link:focus-visible .contact-symbol { filter:drop-shadow(0 0 8px rgba(122,162,247,.3)); transform:scale(1.08); }.contact-link:hover .icon-linkedin,.contact-link:focus-visible .icon-linkedin { filter:none; }.contact-link:hover .logo-fill,.contact-link:focus-visible .logo-fill { fill:var(--accent); stroke:var(--accent); }.contact-link:hover .logo-trace,.contact-link:focus-visible .logo-trace { animation:logo-glow 760ms ease-out; }.contact-link:hover .icon-linkedin .logo-trace,.contact-link:focus-visible .icon-linkedin .logo-trace { animation:linkedin-glow 620ms ease-out; }.contact-link:hover .tryhackme-logo::after,.contact-link:focus-visible .tryhackme-logo::after { animation:logo-glow 760ms ease-out; }.contact-link:hover .external-mark,.contact-link:focus-visible .external-mark { color:var(--accent); transform:translate(2px,-2px) rotate(10deg); }.contact-card.is-primary .contact-link:hover,.contact-card.is-primary .contact-link:focus-visible { transform:translateY(-5px); }.contact-card.is-primary .contact-link:hover .contact-symbol,.contact-card.is-primary .contact-link:focus-visible .contact-symbol { filter:drop-shadow(0 0 11px rgba(125,207,255,.42)); transform:scale(1.12); }.contact-card.is-primary .contact-link:hover .logo-trace,.contact-card.is-primary .contact-link:focus-visible .logo-trace { animation-duration:900ms; }.contact-card.is-primary .contact-link:hover .tryhackme-logo::after,.contact-card.is-primary .contact-link:focus-visible .tryhackme-logo::after { animation-duration:900ms; }
+  .contact-output.is-observing .contact-card { opacity:0; transform:translateY(12px); }.contact-output.is-observing .contact-card.is-revealed { opacity:1; transform:translateY(0); transition:opacity 260ms ease var(--row-delay),transform 260ms ease var(--row-delay); }
+  .closing-line { color:var(--text-muted-2); font-size:11px; margin:2.5rem 0 0; }.closing-line > span:first-child { color:var(--accent); font-weight:600; }
+  @keyframes logo-glow { 0% { filter:drop-shadow(0 0 0 transparent); opacity:0; } 32% { filter:drop-shadow(0 0 6px var(--accent)); opacity:.95; } 100% { filter:drop-shadow(0 0 11px var(--term-cyan)); opacity:.12; } } @keyframes linkedin-glow { 0% { filter:none; opacity:0; } 35% { filter:drop-shadow(0 0 3px rgba(122,162,247,.45)); opacity:.35; } 100% { filter:none; opacity:.04; } }
+  @media (max-width:640px) { .site-footer { padding:3rem 1rem 2rem; }.footer-heading { align-items:flex-start; flex-wrap:wrap; gap:.35rem .55rem; }.terminal-prompt { padding-top:.25rem; }.contact-output { gap:1.25rem; margin-top:1.75rem; }.contact-card { width:132px; }.closing-line { line-height:1.8; } }
+  @media (prefers-reduced-motion:reduce) { .contact-output.is-observing .contact-card { opacity:1; transform:none; }.contact-link,.contact-symbol,.external-mark { transition:none; }.logo-trace,.tryhackme-logo::after { animation:none; }.contact-link:hover,.contact-link:focus-visible,.contact-card.is-primary .contact-link:hover,.contact-card.is-primary .contact-link:focus-visible { transform:none; }.contact-link:hover .contact-symbol,.contact-link:focus-visible .contact-symbol,.contact-card.is-primary .contact-link:hover .contact-symbol,.contact-card.is-primary .contact-link:focus-visible .contact-symbol { filter:none; transform:none; }.contact-link:hover .external-mark,.contact-link:focus-visible .external-mark { transform:none; } }
+</style>
+
+<script>
+  const footer = document.querySelector('#contact');
+  if (footer) {
+    const output = footer.querySelector('[data-contact-output]');
+    const rows = [...footer.querySelectorAll('[data-contact-row]')] as HTMLElement[];
+    const closingCopy = footer.querySelector('[data-closing-copy]') as HTMLElement | null;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const closingText = closingCopy?.textContent || '';
+    let closingTyped = false;
+
+    const typeClosingLine = () => {
+      if (!closingCopy || closingTyped) return;
+      closingTyped = true;
+      closingCopy.textContent = '';
+      let index = 0;
+      const typeNext = () => {
+        closingCopy.textContent = closingText.slice(0, index++);
+        if (index <= closingText.length) window.setTimeout(typeNext, 18);
+      };
+      typeNext();
+    };
+
+    rows.forEach((row, index) => row.style.setProperty('--row-delay', `${index * 70}ms`));
+
+    if (!reduceMotion && output) {
+      output.classList.add('is-observing');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          rows.forEach((row) => row.classList.add('is-revealed'));
+          window.setTimeout(typeClosingLine, rows.length * 70 + 130);
+          observer.unobserve(entry.target);
+        });
+      }, { threshold: 0.2 });
+      observer.observe(output);
+    }
+  }
+</script>
