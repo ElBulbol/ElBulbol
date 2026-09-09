@@ -204,11 +204,11 @@
   }
 
   // If boot already played this session, skip entirely
-  if (sessionStorage.getItem(BOOT_SESSION_KEY)) {
-    overlay.classList.add('is-done');
-  } else {
-    runBoot();
-  }
+if (sessionStorage.getItem(BOOT_SESSION_KEY)) {
+  overlay.classList.add('is-done');
+} else {
+  runBoot();
+}
 
   async function runBoot() {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

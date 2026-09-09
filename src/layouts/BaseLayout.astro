@@ -35,10 +35,11 @@ const {
     </main>
 
     <style>
-      .terminal-heading-cursor { color:var(--accent); display:inline-block; font-weight:400; margin-left:.08em; opacity:0; }
-      .terminal-heading-cursor.is-active { animation:terminal-heading-blink .7s steps(1,end) infinite; opacity:1; }
+      :global(.terminal-heading-cursor) { color:var(--accent); display:inline-block; font-weight:400; margin-left:.08em; opacity:0; }
+      :global(.terminal-heading-cursor.is-active) { animation:terminal-heading-blink .7s steps(1,end) infinite; opacity:1; }
+      :global(.terminal-heading-tail) { white-space:nowrap; }
       @keyframes terminal-heading-blink { 50% { opacity:0; } }
-      @media (prefers-reduced-motion:reduce) { .terminal-heading-cursor.is-active { animation:none; } }
+      @media (prefers-reduced-motion:reduce) { :global(.terminal-heading-cursor.is-active) { animation:none; } }
     </style>
 
     <script>
@@ -50,7 +51,7 @@ const {
         const sections = [...new Set(headings.map((heading) => heading.closest('section, footer')).filter(Boolean))] as HTMLElement[];
         let activeSection: HTMLElement | null = null;
 
-        const setActiveSection = (section: HTMLElement) => {
+        const setActiveSection = (section: HTMLElement | null) => {
           activeSection = section;
           headings.forEach((heading) => {
             const cursor = heading.querySelector('.terminal-heading-cursor');
@@ -64,7 +65,7 @@ const {
             const bounds = item.getBoundingClientRect();
             return bounds.top <= marker && bounds.bottom > marker;
           });
-          if (section) setActiveSection(section);
+          setActiveSection(section || null);
         };
 
         const typeHeading = (heading: HTMLElement) => {
@@ -76,16 +77,21 @@ const {
 
           heading.setAttribute('aria-label', command);
           const typedText = document.createTextNode('');
+          const tail = document.createElement('span');
+          tail.className = 'terminal-heading-tail';
           const cursor = document.createElement('span');
           cursor.className = 'terminal-heading-cursor';
           cursor.classList.toggle('is-active', heading.closest('section, footer') === activeSection);
           cursor.setAttribute('aria-hidden', 'true');
           cursor.textContent = '_';
-          heading.replaceChildren(typedText, cursor);
+          tail.append(cursor);
+          heading.replaceChildren(typedText, tail);
 
           let index = 0;
           const typeNext = () => {
-            typedText.textContent = command.slice(0, index++);
+            const visibleText = command.slice(0, index++);
+            typedText.textContent = visibleText.slice(0, -1);
+            tail.replaceChildren(visibleText.slice(-1), cursor);
             if (index <= command.length) window.setTimeout(typeNext, 14);
           };
           typeNext();
@@ -106,6 +112,16 @@ const {
         headings.forEach((heading) => headingObserver.observe(heading));
         sections.forEach((section) => sectionObserver.observe(section));
         window.addEventListener('scroll', syncActiveSection, { passive: true });
+        window.addEventListener('resize', syncActiveSection, { passive: true });
+
+        document.addEventListener('mode-selected', (event) => {
+          const mode = (event as CustomEvent<{ mode: string }>).detail.mode;
+          if (mode === 'graphical') {
+            window.requestAnimationFrame(syncActiveSection);
+          } else {
+            setActiveSection(null);
+          }
+        });
       }
     </script>
   </body>

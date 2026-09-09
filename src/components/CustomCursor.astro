@@ -16,6 +16,17 @@
     cursor: none !important;
   }
 
+  /* ANI files animate reliably when used as real cursors, not background images. */
+  :global(html.custom-cursor-active.cursor-idle-active),
+  :global(html.custom-cursor-active.cursor-idle-active *) {
+    cursor: url('/cursors/lancer-busy-alt.ani'), wait !important;
+  }
+
+  :global(html.custom-cursor-active.cursor-working-active),
+  :global(html.custom-cursor-active.cursor-working-active *) {
+    cursor: url('/cursors/lancer-working-in-background.ani'), wait !important;
+  }
+
   .custom-cursor {
     position: fixed;
     top: 0;
@@ -42,8 +53,20 @@
     background-image: url('/cursors/lancer-unavailable.cur');
   }
 
+  .custom-cursor.is-idle {
+    background-image: url('/cursors/lancer-busy-alt.ani');
+  }
+
+  .custom-cursor.is-busy {
+    background-image: url('/cursors/lancer-working-in-background.ani');
+  }
+
   .custom-cursor.is-visible {
     opacity: 1;
+  }
+
+  .custom-cursor.is-native-animated {
+    opacity: 0 !important;
   }
 
   /* Fallback for touch / reduced motion */
@@ -61,10 +84,62 @@
 
   if (cursor && !isTouch && !isReducedMotion) {
     document.documentElement.classList.add('custom-cursor-active');
+
+    const IDLE_DELAY = 5000;
+    const interactiveSelector = 'a, button, input, select, textarea, [role="button"], label, .mode-switch-btn';
+    let idleTimer: number | undefined;
+    let workCount = document.documentElement.dataset.cursorBusy === 'true' ? 1 : 0;
+    let hoveredInteractive: HTMLElement | null = null;
+
+    const syncCursorState = () => {
+      const isWorking = workCount > 0;
+      const isBusyControl = hoveredInteractive?.getAttribute('aria-busy') === 'true';
+      const isUnavailable = Boolean(hoveredInteractive && !isBusyControl && (
+        hoveredInteractive.hasAttribute('disabled') || hoveredInteractive.getAttribute('aria-disabled') === 'true'
+      ));
+      const useWorkingCursor = (isWorking || isBusyControl) && !isUnavailable;
+      const useIdleCursor = cursor.classList.contains('is-idle') && !useWorkingCursor && !isUnavailable;
+
+      cursor.classList.toggle('is-busy', useWorkingCursor);
+      cursor.classList.toggle('is-disabled', isUnavailable);
+      cursor.classList.toggle('is-hovering', Boolean(hoveredInteractive) && !isWorking && !isBusyControl && !isUnavailable);
+      cursor.classList.toggle('is-native-animated', useWorkingCursor || useIdleCursor);
+      document.documentElement.classList.toggle('cursor-working-active', useWorkingCursor);
+      document.documentElement.classList.toggle('cursor-idle-active', useIdleCursor);
+    };
+
+    const resetIdleTimer = () => {
+      window.clearTimeout(idleTimer);
+      cursor.classList.remove('is-idle');
+      syncCursorState();
+      idleTimer = window.setTimeout(() => {
+        cursor.classList.add('is-idle');
+        syncCursorState();
+      }, IDLE_DELAY);
+    };
+
+    const setHoveredInteractive = (target: EventTarget | null) => {
+      hoveredInteractive = target instanceof Element
+        ? target.closest<HTMLElement>(interactiveSelector)
+        : null;
+      syncCursorState();
+    };
+
+    document.addEventListener('cursor-work-start', () => {
+      workCount += 1;
+      syncCursorState();
+    });
+
+    document.addEventListener('cursor-work-end', () => {
+      workCount = Math.max(0, workCount - 1);
+      syncCursorState();
+    });
     
     // Instant cursor tracking — no easing, no lag
     window.addEventListener('mousemove', (e) => {
       cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+      resetIdleTimer();
+      setHoveredInteractive(document.elementFromPoint(e.clientX, e.clientY));
       
       if (!cursor.classList.contains('is-visible')) {
         cursor.classList.add('is-visible');
@@ -72,35 +147,25 @@
     }, { passive: true });
 
     // Handle interactive elements — swap cursor image
-    const interactiveSelector = 'a, button, input, select, textarea, [role="button"], label, .mode-switch-btn';
-    
     document.addEventListener('mouseover', (e) => {
-      const target = e.target as HTMLElement;
-      if (!target) return;
-
-      const interactive = target.closest(interactiveSelector);
-      
-      if (interactive) {
-        if (interactive.hasAttribute('disabled') || interactive.getAttribute('aria-disabled') === 'true') {
-          cursor.classList.add('is-disabled');
-          cursor.classList.remove('is-hovering');
-        } else {
-          cursor.classList.add('is-hovering');
-          cursor.classList.remove('is-disabled');
-        }
-      } else {
-        cursor.classList.remove('is-hovering');
-        cursor.classList.remove('is-disabled');
-      }
+      setHoveredInteractive(e.target);
     }, { passive: true });
+
+    ['mousedown', 'wheel', 'keydown', 'touchstart'].forEach((eventName) => {
+      window.addEventListener(eventName, resetIdleTimer, { passive: true });
+    });
+
+    resetIdleTimer();
     
     // Hide when leaving window
     document.addEventListener('mouseleave', () => {
       cursor.classList.remove('is-visible');
+      window.clearTimeout(idleTimer);
     });
     
     document.addEventListener('mouseenter', () => {
       cursor.classList.add('is-visible');
+      resetIdleTimer();
     });
   }
 </script>

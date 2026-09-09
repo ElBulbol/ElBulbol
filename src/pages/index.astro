@@ -18,8 +18,11 @@ import Footer from '../components/Footer.astro';
   <div id="mode-graphical" class="mode-container" aria-hidden="true">
     <section class="hero">
       <div class="hero-content">
+        <p class="hero-command" aria-label="[belal@portfolio ~]$ whoami">
+          <span class="hero-prompt">[belal@portfolio ~]$</span> <span data-hero-command></span><span class="hero-command-cursor" aria-hidden="true">_</span>
+        </p>
+        <h1 class="hero-name" aria-label="Belal Alshref"><span data-hero-name-copy></span><span class="hero-name-tail" data-hero-name-tail><span class="hero-name-cursor" aria-hidden="true">_</span></span></h1>
         <p class="hero-label">// SOC Analyst & Cybersecurity</p>
-        <h1 class="hero-name">Belal Alshref</h1>
         <p class="hero-tagline">All I want is to become undeniable.</p>
       </div>
     </section>
@@ -57,6 +60,14 @@ import Footer from '../components/Footer.astro';
 </BaseLayout>
 
 <style>
+  @font-face {
+    font-family: 'ZT Nature';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/zt-nature.bold.otf') format('opentype');
+  }
+
   .mode-switch-btn {
     position: fixed;
     top: 2rem;
@@ -115,30 +126,85 @@ import Footer from '../components/Footer.astro';
   }
 
   .hero-content {
-    text-align: center;
+    max-width: 1500px;
+    text-align: left;
+    width: 100%;
     z-index: 2; /* above mouse glow */
+  }
+
+  .hero-command {
+    color: var(--text-muted);
+    font-size: clamp(.78rem, 1.15vw, 1rem);
+    margin: 0 0 1.25rem;
+  }
+
+  .hero-prompt, .hero-command-cursor {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .hero-command-cursor {
+    animation: hero-cursor-blink .7s steps(1, end) infinite;
+    display: inline-block;
+    margin-left: .08em;
   }
 
   .hero-label {
     color: var(--text-muted-2);
-    font-size: var(--font-size-xl);
-    margin-bottom: 1rem;
-    letter-spacing: 0.05em;
+    font-size: clamp(.8rem, 1.15vw, 1rem);
+    letter-spacing: .12em;
+    margin: 1.4rem 0 0;
+    text-transform: uppercase;
   }
 
   .hero-name {
-    font-size: clamp(2.5rem, 5vw, 4rem);
-    font-weight: 700;
+    font-family: "ZT Nature", var(--font-mono);
+    font-size: clamp(4rem, 12vw, 11rem);
+    font-variation-settings: 'wght' 800;
+    font-weight: 800;
+    letter-spacing: -.07em;
+    line-height: .86;
+    max-width: 100%;
     color: var(--text-primary);
-    margin-bottom: 0.75rem;
+    margin: 0;
+    text-align: center;
+    text-wrap: balance;
+    text-shadow: 0 0 8px rgba(122,162,247,.28), 0 0 26px rgba(125,207,255,.16);
+  }
+
+  .hero-name-tail { white-space: nowrap; }
+
+  .hero-name-cursor {
+    animation: hero-cursor-blink .7s steps(1, end) infinite;
+    color: var(--accent);
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: .72em;
+    font-weight: 500;
+    letter-spacing: 0;
+    margin-left: .04em;
+    vertical-align: .08em;
   }
 
   .hero-tagline {
     color: var(--text-muted);
-    font-size: var(--font-size-xl);
+    font-size: clamp(1rem, 1.4vw, 1.25rem);
     max-width: 700px;
-    margin: 0 auto;
+    margin: .75rem 0 0;
     font-style: italic;
+  }
+
+  @keyframes hero-cursor-blink {
+    50% { opacity: 0; }
+  }
+
+  @media (max-width: 640px) {
+    .hero { padding: 1.5rem; }
+    .hero-name { font-size: clamp(3.4rem, 16vw, 6.25rem); letter-spacing: -.075em; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-command-cursor, .hero-name-cursor { animation: none; }
   }
 
   /* Terminal Stub */
@@ -225,8 +291,55 @@ import Footer from '../components/Footer.astro';
   const terminalMode = document.getElementById('mode-terminal');
   const modeSwitchBtn = document.getElementById('mode-switch-btn');
   const modeSwitchText = document.getElementById('mode-switch-text');
+  const heroCommand = document.querySelector('[data-hero-command]');
+  const heroNameCopy = document.querySelector('[data-hero-name-copy]');
+  const heroNameTail = document.querySelector('[data-hero-name-tail]');
+  const heroNameCursor = document.querySelector('.hero-name-cursor');
 
   let currentMode = '';
+  let heroCommandTyped = false;
+  let heroNameTyped = false;
+
+  const typeHeroName = () => {
+    if (!(heroNameCopy instanceof HTMLElement) || !(heroNameTail instanceof HTMLElement) || !(heroNameCursor instanceof HTMLElement) || heroNameTyped) return;
+    heroNameTyped = true;
+
+    const name = 'Belal Alshref';
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      heroNameCopy.textContent = name;
+      heroNameTail.replaceChildren();
+      return;
+    }
+
+    let index = 0;
+    const typeNext = () => {
+      const visibleText = name.slice(0, index++);
+      heroNameCopy.textContent = visibleText.slice(0, -1);
+      heroNameTail.replaceChildren(visibleText.slice(-1), heroNameCursor);
+      if (index <= name.length) window.setTimeout(typeNext, 72);
+    };
+    typeNext();
+  };
+
+  const typeHeroCommand = () => {
+    if (!(heroCommand instanceof HTMLElement) || heroCommandTyped) return;
+    heroCommandTyped = true;
+
+    const command = 'whoami';
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      heroCommand.textContent = command;
+      typeHeroName();
+      return;
+    }
+
+    let index = 0;
+    const typeNext = () => {
+      heroCommand.textContent = command.slice(0, index++);
+      if (index <= command.length) window.setTimeout(typeNext, 70);
+      else window.setTimeout(typeHeroName, 220);
+    };
+    typeNext();
+  };
 
   // Listen for mode selection from ModeGate
   document.addEventListener('mode-selected', (e) => {
@@ -263,6 +376,7 @@ import Footer from '../components/Footer.astro';
         graphicalMode.classList.add('is-visible');
         graphicalMode.removeAttribute('aria-hidden');
       }
+      window.setTimeout(typeHeroCommand, 180);
     }
   });
 

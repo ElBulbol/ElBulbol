@@ -109,6 +109,10 @@ const issuerGlyphs: Record<string, string> = {
       if (!status || record.classList.contains('is-in-progress')) return;
       (statusTimers.get(status) || []).forEach(window.clearTimeout);
       statusTimers.delete(status);
+      if (status.dataset.cursorWorking === 'true') {
+        delete status.dataset.cursorWorking;
+        document.dispatchEvent(new CustomEvent('cursor-work-end'));
+      }
       status.textContent = 'VERIFIED ✓';
     };
 
@@ -116,9 +120,15 @@ const issuerGlyphs: Record<string, string> = {
       const status = record.querySelector('[data-status-copy]') as HTMLElement | null;
       if (!status || record.classList.contains('is-in-progress') || reduceMotion) return;
       resetStatus(record);
+      status.dataset.cursorWorking = 'true';
+      document.dispatchEvent(new CustomEvent('cursor-work-start'));
       status.textContent = 'checking...';
       const connecting = window.setTimeout(() => { status.textContent = 'verifying issuer...'; }, 210);
-      const verified = window.setTimeout(() => { status.textContent = 'VERIFIED ✓'; }, 680);
+      const verified = window.setTimeout(() => {
+        status.textContent = 'VERIFIED ✓';
+        delete status.dataset.cursorWorking;
+        document.dispatchEvent(new CustomEvent('cursor-work-end'));
+      }, 680);
       statusTimers.set(status, [connecting, verified]);
     };
 
