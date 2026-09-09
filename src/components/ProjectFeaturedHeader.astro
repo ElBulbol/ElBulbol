@@ -5,10 +5,17 @@ const { project } = Astro.props;
 <div class="fp-header-wrapper">
   <div class="fp-header">
     <div class="fp-header-left">
-      <span class="fp-category">{project.category}</span>
-      {project.team && <span class="fp-badge">Team Project</span>}
+      {project.chromeLabel ? (
+        <span class="fp-category">{project.chromeLabel}</span>
+      ) : (
+        <>
+          <span class="fp-category">{project.category}</span>
+          {project.featured && <span class="fp-badge fp-featured-badge">Featured</span>}
+          {project.team && <span class="fp-badge">Team Project</span>}
+        </>
+      )}
     </div>
-    <span class="fp-date">{project.date}</span>
+    {project.date && <span class="fp-date">{project.date}</span>}
   </div>
 
   <h3 class="fp-title">{project.title}</h3>
@@ -24,7 +31,7 @@ const { project } = Astro.props;
     <div class="fp-links">
       {project.github && (
         <a href={project.github} target="_blank" rel="noopener noreferrer" class="fp-link">
-          [↗ GitHub]
+          [↗ View on GitHub]
         </a>
       )}
       {project.liveDemo && (
@@ -70,6 +77,11 @@ const { project } = Astro.props;
     border: 1px solid var(--border);
     padding: 0.15rem 0.6rem;
     border-radius: 2px;
+  }
+
+  .fp-featured-badge {
+    color: var(--term-green);
+    border-color: rgba(158, 206, 106, 0.5);
   }
 
   .fp-date {

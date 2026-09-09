@@ -2,11 +2,13 @@
 import { projects, categories } from '../data/projects.js';
 import ProjectFeatured from './ProjectFeatured.astro';
 import ProjectFeaturedInfra from './ProjectFeaturedInfra.astro';
+import ProjectFeaturedContestPlatform from './ProjectFeaturedContestPlatform.astro';
 import ProjectCard from './ProjectCard.astro';
 
 const layoutComponents: Record<string, any> = {
   'infrastructure': ProjectFeaturedInfra,
   'attack-defend': ProjectFeatured,
+  'contest-platform': ProjectFeaturedContestPlatform,
   'default': ProjectCard
 };
 
@@ -18,7 +20,7 @@ const normalProjects = projects.filter(p => !p.featured);
 <section id="projects" class="projects-section">
   <!-- Section heading -->
   <div class="projects-heading reveal">
-    <span class="heading-prefix">~/</span><h2 class="heading-text">projects</h2>
+    <span class="terminal-prompt">[belal@portfolio ~]$</span><h2 class="heading-text">ls ~/projects</h2>
   </div>
 
   <div class="projects-container">
@@ -72,34 +74,35 @@ const normalProjects = projects.filter(p => !p.featured);
     gap: 2rem;
   }
 
-  /* Section heading */
+  /* Section heading — terminal command */
   .projects-heading {
     display: flex;
     align-items: baseline;
-    gap: 0;
+    gap: 0.7rem;
     width: 100%;
-    max-width: 1200px;
+    max-width: 1320px;
     border-bottom: 1px solid var(--border);
-    padding-bottom: 1.5rem;
+    padding-bottom: 1.75rem;
   }
 
-  .heading-prefix {
+  .terminal-prompt {
     color: var(--accent);
-    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-size: clamp(0.85rem, 1.5vw, 1.15rem);
     font-weight: 700;
     font-family: var(--font-mono);
+    white-space: nowrap;
   }
 
   .heading-text {
     color: var(--text-primary);
-    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-size: clamp(1.65rem, 3.4vw, 3rem);
     font-weight: 700;
     font-family: var(--font-mono);
     margin: 0;
   }
 
   .projects-container {
-    max-width: 1200px;
+    max-width: 1320px;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -184,6 +187,12 @@ const normalProjects = projects.filter(p => !p.featured);
   }
 
   .delay-1 { transition-delay: 150ms; }
+
+  @media (max-width: 640px) {
+    .projects-heading { align-items: flex-start; flex-wrap: wrap; gap: 0.35rem 0.55rem; }
+    .terminal-prompt { font-size: 0.78rem; padding-top: 0.35rem; }
+    .heading-text { font-size: clamp(1.35rem, 7vw, 1.8rem); }
+  }
 
   @media (prefers-reduced-motion: reduce) {
     .reveal {

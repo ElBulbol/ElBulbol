@@ -25,6 +25,29 @@
 
 export const projects = [
   {
+    slug: 'must-cpc-discord-bot',
+    title: 'MUST CPC Discord Bot',
+    shortDescription:
+      'A Discord bot that turned a competitive-programming community into an automated contest and challenge platform.',
+    category: 'systems',
+    featured: true,
+    chromeLabel: 'FEATURED / SYSTEMS',
+    layout: 'contest-platform',
+    role: 'Community Admin & Technical Lead',
+    contribution: 'Developed and maintained the Python-based Discord bot used by the MUST competitive-programming community, integrating Codeforces data into contests, challenges, and leaderboards.',
+    date: 'Jan 2025',
+    team: false,
+    github: 'https://github.com/ElBulbol/MUST-CPC-BOT',
+    tech: ['Python', 'discord.py', 'asyncio', 'Codeforces API', 'SQLite', 'aiosqlite', 'aiohttp'],
+    metrics: [
+      ['1500+', 'community members'],
+      ['21', 'slash commands'],
+      ['3', 'Codeforces API endpoints'],
+      ['2', 'SQLite databases'],
+      ['1', 'automated contest lifecycle'],
+    ],
+  },
+  {
     slug: 'home-soc-lab',
     title: 'Home SOC Lab',
     shortDescription:
