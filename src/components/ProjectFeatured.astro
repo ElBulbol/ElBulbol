@@ -2,6 +2,11 @@
 import ProjectFeaturedHeader from './ProjectFeaturedHeader.astro';
 
 const { project } = Astro.props;
+const controlPath = [
+  { name: 'pfSense', role: 'NETWORK PERIMETER' },
+  { name: 'Suricata IDS/IPS', role: 'NETWORK INSPECTION' },
+  { name: 'ModSecurity', role: 'HTTP INSPECTION / WAF' },
+];
 ---
 
 <article class="featured-project reveal" data-slug={project.slug}>
@@ -11,56 +16,40 @@ const { project } = Astro.props;
   <!-- Attack Flow Diagram -->
   {project.attacks && project.defense && (
     <div class="attack-flow reveal delay-1">
-      <h4 class="flow-heading">Attack → Detect → Defend</h4>
+      <h4 class="flow-heading">Inbound request → security controls → application</h4>
       
       <div class="flow-diagram">
-        <!-- Attacker node -->
         <div class="flow-node node-attacker">
           <div class="node-icon">⟩_</div>
           <div class="node-label">Attacker</div>
         </div>
         <div class="flow-connector">
-          <div class="flow-packet packet-1"></div>
-          <div class="flow-packet packet-2"></div>
-          <div class="flow-packet packet-3"></div>
+          <span>INBOUND REQUEST</span><i aria-hidden="true">↓</i>
         </div>
 
-        <!-- Target node -->
+        {controlPath.map((control) => {
+          const defense = project.defense.find((item: any) => item.name === control.name);
+          return defense && (
+            <Fragment>
+            <div class="flow-node node-defense" data-defense={defense.name}>
+              <div class="node-status">ACTIVE</div>
+              <div class="node-role">{control.role}</div>
+              <div class="node-label">{defense.name}</div>
+              <div class="node-detail">{defense.description}</div>
+            </div>
+            <div class="flow-connector"><span>INSPECT / ENFORCE</span><i aria-hidden="true">↓</i></div>
+            </Fragment>
+          );
+        })}
+
         <div class="flow-node node-target">
-          <div class="node-icon">⬡</div>
+          <div class="node-icon">◈</div>
+          <div class="node-role">PROTECTED WORKLOAD</div>
           <div class="node-label">Real Estate Web App</div>
           <div class="node-detail">Flask · MySQL · HTML/CSS/JS</div>
         </div>
-        <div class="flow-connector">
-          <div class="flow-packet packet-1 packet-warn"></div>
-          <div class="flow-packet packet-2 packet-warn"></div>
-        </div>
-
-        <!-- Defense layers -->
-        {project.defense.map((d: any, i: number) => (
-          <Fragment>
-            <div class="flow-node node-defense" data-defense={d.name}>
-              <div class="node-status">ACTIVE</div>
-              <div class="node-label">{d.name}</div>
-              <div class="node-detail">{d.description}</div>
-            </div>
-            {i < project.defense.length - 1 && (
-              <div class="flow-connector">
-                <div class="flow-packet packet-1 packet-blocked"></div>
-              </div>
-            )}
-          </Fragment>
-        ))}
-        <div class="flow-connector">
-          <div class="flow-packet packet-1 packet-safe"></div>
-        </div>
-
-        <!-- Protected node -->
-        <div class="flow-node node-protected">
-          <div class="node-icon">◈</div>
-          <div class="node-label">Protected Environment</div>
-        </div>
       </div>
+      <p class="flow-note">Each control is positioned before the application: traffic is filtered, inspected, and then allowed to reach the workload.</p>
     </div>
   )}
 
@@ -173,18 +162,26 @@ const { project } = Astro.props;
     font-weight: 600;
   }
 
+  .node-role {
+    color: var(--text-muted-2);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.35rem;
+  }
+
   .node-detail {
     font-size: var(--font-size-sm);
     color: var(--text-muted-2);
     margin-top: 0.25rem;
+    line-height: 1.55;
     max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease, opacity 0.3s ease;
     opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease, opacity 0.2s ease;
   }
 
-  .flow-node:hover .node-detail {
-    max-height: 80px;
+  .flow-node:hover .node-detail, .flow-node:focus-within .node-detail {
+    max-height: 90px;
     opacity: 1;
   }
 
@@ -205,50 +202,56 @@ const { project } = Astro.props;
   .node-target { border-color: var(--term-yellow); }
   .node-target .node-icon { color: var(--term-yellow); }
 
-  .node-defense:hover { border-color: var(--term-green); background: rgba(158, 206, 106, 0.05); }
+  .node-defense:hover { border-color: var(--accent); background: rgba(122, 162, 247, 0.05); }
 
-  .node-protected { border-color: var(--term-green); }
-  .node-protected .node-icon { color: var(--term-green); }
-
-  /* Flow connectors with animated packets */
+  /* Labeled connections make the order of controls explicit. */
   .flow-connector {
-    width: 2px;
-    height: 32px;
-    background: var(--border);
+    align-items: center;
+    color: var(--text-muted-2);
+    display: flex;
+    flex-direction: column;
+    font-size: 9px;
+    gap: 0.15rem;
+    height: 38px;
+    justify-content: center;
+    letter-spacing: 0.08em;
     position: relative;
-    overflow: hidden;
+    width: 100%;
   }
 
-  .flow-packet {
+  .flow-connector::before {
+    background: var(--border);
+    content: '';
+    height: 100%;
+    left: 50%;
     position: absolute;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: var(--term-red);
-    left: -1px;
-    animation: packetFlow 2s ease-in-out infinite;
+    top: 0;
+    width: 1px;
+    z-index: 0;
   }
 
-  .flow-packet.packet-2 { animation-delay: 0.6s; }
-  .flow-packet.packet-3 { animation-delay: 1.2s; }
-
-  .packet-warn { background: var(--term-yellow); }
-  .packet-blocked { background: var(--term-red); animation-name: packetBlocked; }
-  .packet-safe { background: var(--term-green); }
-
-  @keyframes packetFlow {
-    0% { top: -4px; opacity: 0; }
-    20% { opacity: 1; }
-    80% { opacity: 1; }
-    100% { top: 32px; opacity: 0; }
+  .flow-connector span, .flow-connector i {
+    background: var(--bg-base);
+    position: relative;
+    z-index: 1;
   }
 
-  @keyframes packetBlocked {
-    0% { top: -4px; opacity: 0; }
-    20% { opacity: 1; }
-    50% { opacity: 1; top: 16px; }
-    60% { opacity: 0; top: 16px; }
-    100% { opacity: 0; top: 16px; }
+  .flow-connector span { padding: 0 0.4rem; }
+
+  .flow-connector i {
+    color: var(--accent);
+    font-size: 13px;
+    font-style: normal;
+    line-height: 1;
+  }
+
+  .flow-note {
+    color: var(--text-muted-2);
+    font-size: 11px;
+    line-height: 1.65;
+    margin: 1.25rem auto 0;
+    max-width: 520px;
+    text-align: center;
   }
 
   /* Vulnerability Cards */
@@ -435,9 +438,6 @@ const { project } = Astro.props;
       opacity: 1;
       transform: none;
       transition: none;
-    }
-    .flow-packet {
-      animation: none;
     }
   }
 </style>

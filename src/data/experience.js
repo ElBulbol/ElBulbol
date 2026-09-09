@@ -1,0 +1,27 @@
+export const experience = [
+  {
+    id: 'cib',
+    period: '2025',
+    organization: 'CIB Bank',
+    role: 'IT Trainee',
+    location: 'Egypt',
+    dates: 'Aug 2025 – Sep 2025',
+    summary: 'Worked with the administration and support workflows behind enterprise systems: Active Directory, user accounts, permissions, ticketing, password resets, and endpoint troubleshooting.',
+    flow: ['Active Directory', 'Users', 'Permissions', 'Group Policies', 'Endpoints', 'IT Operations'],
+    detail: 'Practical exposure to networked systems, group policies, and enterprise IT workflows.',
+  },
+  {
+    id: 'depi',
+    period: '2026 — now',
+    organization: 'DEPI',
+    role: 'Cyber Security Incident Response Analyst Trainee',
+    location: 'Egypt',
+    dates: 'Jul 2026 – Present',
+    status: 'TRAINING ACTIVE',
+    summary: 'Participating in structured incident-response training covering threat assessment, vulnerability analysis, remediation, and security incident handling.',
+    labs: '70+ hands-on lab scenarios',
+    areas: ['Phishing', 'Network', 'Email', 'IDS', 'Antivirus'],
+    flow: ['Alert', 'Investigate', 'Analyze', 'Document', 'Respond'],
+    detail: 'Developing practical skills in log analysis, evidence handling, incident documentation, and security reporting.',
+  },
+];
