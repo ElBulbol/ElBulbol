@@ -1,0 +1,18 @@
+@import './reset.css';
+@import './tokens.css';
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+  overflow-x: hidden;
+}
+
+/* Global custom cursors are now handled by CustomCursor.astro */
+
+::selection {
+  background-color: var(--accent);
+  color: var(--bg-base);
+}

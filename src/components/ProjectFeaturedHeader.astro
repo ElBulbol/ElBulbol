@@ -1,0 +1,146 @@
+---
+const { project } = Astro.props;
+---
+
+<div class="fp-header-wrapper">
+  <div class="fp-header">
+    <div class="fp-header-left">
+      <span class="fp-category">{project.category}</span>
+      {project.team && <span class="fp-badge">Team Project</span>}
+    </div>
+    <span class="fp-date">{project.date}</span>
+  </div>
+
+  <h3 class="fp-title">{project.title}</h3>
+  {project.role && <p class="fp-role">// {project.role}</p>}
+  <p class="fp-description">{project.shortDescription}</p>
+
+  <div class="fp-footer-top">
+    <div class="fp-tech">
+      {project.tech && project.tech.map((t: string) => (
+        <span class="tech-tag">{t}</span>
+      ))}
+    </div>
+    <div class="fp-links">
+      {project.github && (
+        <a href={project.github} target="_blank" rel="noopener noreferrer" class="fp-link">
+          [↗ GitHub]
+        </a>
+      )}
+      {project.liveDemo && (
+        <a href={project.liveDemo} target="_blank" rel="noopener noreferrer" class="fp-link">
+          [↗ Live Demo]
+        </a>
+      )}
+    </div>
+  </div>
+</div>
+
+<style>
+  .fp-header-wrapper {
+    margin-bottom: 2.5rem;
+  }
+
+  .fp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .fp-header-left {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .fp-category {
+    text-transform: uppercase;
+    font-size: var(--font-size-sm);
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    border: 1px solid var(--accent);
+    padding: 0.15rem 0.6rem;
+    border-radius: 2px;
+  }
+
+  .fp-badge {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted-2);
+    border: 1px solid var(--border);
+    padding: 0.15rem 0.6rem;
+    border-radius: 2px;
+  }
+
+  .fp-date {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted-2);
+  }
+
+  .fp-title {
+    font-size: var(--font-size-2xl);
+    color: var(--text-primary);
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .fp-role {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted-2);
+    margin-bottom: 1rem;
+  }
+
+  .fp-description {
+    font-size: var(--font-size-lg);
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-width: 700px;
+    margin-bottom: 1.5rem;
+  }
+
+  .fp-footer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .fp-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tech-tag {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted-2);
+    border: 1px solid var(--border);
+    padding: 0.2rem 0.6rem;
+    border-radius: 2px;
+    background: var(--bg-base);
+  }
+
+  .fp-links {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .fp-link {
+    font-size: var(--font-size-sm);
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color var(--transition-instant);
+  }
+
+  .fp-link:hover {
+    color: var(--text-primary);
+  }
+
+  @media (max-width: 600px) {
+    .fp-title {
+      font-size: var(--font-size-xl);
+    }
+  }
+</style>

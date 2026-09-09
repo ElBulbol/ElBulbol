@@ -1,0 +1,324 @@
+---
+/**
+ * BootScreen — full-viewport terminal boot overlay.
+ *
+ * Renders a terminal window that plays systemd-style log lines,
+ * then collapses away to reveal the site underneath.
+ *
+ * All animation + sequencing lives in the inline <script> below
+ * (Astro inline scripts ship as a module, no island needed).
+ */
+---
+
+<div id="boot-overlay" class="boot-overlay" aria-live="polite" role="status">
+  <div class="boot-terminal">
+    <div class="boot-titlebar">
+      <span class="boot-titlebar-dot dot-close"></span>
+      <span class="boot-titlebar-dot dot-minimize"></span>
+      <span class="boot-titlebar-dot dot-maximize"></span>
+      <span class="boot-titlebar-title">foot — belal@linux</span>
+    </div>
+    <div class="boot-body" id="boot-body">
+      <!-- Lines injected by JS -->
+    </div>
+    <div class="boot-skip" id="boot-skip">Press any key to skip</div>
+  </div>
+</div>
+
+<style>
+  .boot-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-boot);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-base);
+    /* Opening state — starts scaled down and transparent */
+    opacity: 0;
+    transform: scale(0.92);
+    transition:
+      opacity var(--transition-boot) ease-out,
+      transform var(--transition-boot) ease-out;
+  }
+
+  /* Played state: visible */
+  .boot-overlay.is-open {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Closing state */
+  .boot-overlay.is-closing {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  /* After close — remove from flow */
+  .boot-overlay.is-done {
+    display: none;
+  }
+
+  .boot-terminal {
+    width: min(720px, 90vw);
+    max-height: 80vh;
+    background-color: var(--bg-panel-solid);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-structural);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .boot-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background-color: var(--bg-panel-solid);
+    border-bottom: 1px solid var(--border);
+    user-select: none;
+  }
+
+  .boot-titlebar-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .dot-close {
+    background-color: var(--accent);
+  }
+
+  .dot-minimize {
+    background-color: var(--accent-warn);
+  }
+
+  .dot-maximize {
+    background-color: var(--term-green);
+  }
+
+  .boot-titlebar-title {
+    margin-left: 8px;
+    font-size: var(--font-size-sm);
+    color: var(--text-muted-2);
+  }
+
+  .boot-body {
+    flex: 1;
+    padding: 12px 16px;
+    overflow-y: auto;
+    font-size: var(--font-size-sm);
+    line-height: 1.8;
+    min-height: 200px;
+    max-height: calc(80vh - 100px);
+  }
+
+  .boot-line {
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+      opacity 80ms ease-out,
+      transform 80ms ease-out;
+  }
+
+  .boot-line.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .boot-status {
+    display: inline-block;
+    min-width: 7ch;
+    font-weight: 700;
+  }
+
+  .boot-status-ok {
+    color: var(--term-green);
+  }
+
+  .boot-status-warn {
+    color: var(--term-yellow);
+  }
+
+  .boot-text {
+    color: var(--text-muted);
+  }
+
+  .boot-skip {
+    padding: 8px 16px;
+    text-align: center;
+    font-size: var(--font-size-sm);
+    color: var(--text-muted-2);
+    border-top: 1px solid var(--border);
+    user-select: none;
+    opacity: 0;
+    transition: opacity 200ms ease-out;
+  }
+
+  .boot-skip.is-visible {
+    opacity: 1;
+  }
+
+  /* Reduced motion: skip all animations, show everything instantly */
+  @media (prefers-reduced-motion: reduce) {
+    .boot-overlay {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+
+    .boot-overlay.is-closing {
+      opacity: 0;
+      transform: none;
+      transition: none;
+    }
+
+    .boot-line {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+
+    .boot-skip {
+      opacity: 1;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import { bootLines } from '../data/bootLines.js';
+
+  const BOOT_SESSION_KEY = 'portfolio-boot-complete';
+  const LINE_DELAY = 80;
+  const BOOT_TRANSITION_MS = 250;
+
+  const overlay = document.getElementById('boot-overlay');
+  const body = document.getElementById('boot-body');
+  const skipHint = document.getElementById('boot-skip');
+
+  if (!overlay || !body || !skipHint) {
+    throw new Error('Boot screen elements not found');
+  }
+
+  // If boot already played this session, skip entirely
+  if (sessionStorage.getItem(BOOT_SESSION_KEY)) {
+    overlay.classList.add('is-done');
+  } else {
+    runBoot();
+  }
+
+  async function runBoot() {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // 1. Opening animation
+    // Force a reflow so the initial state (opacity:0, scale:0.92) is painted
+    overlay.offsetHeight;
+    overlay.classList.add('is-open');
+
+    if (!reducedMotion) {
+      await sleep(BOOT_TRANSITION_MS);
+    }
+
+    // Show skip hint
+    skipHint.classList.add('is-visible');
+
+    // 2. Play boot lines
+    let skipped = false;
+
+    const skipHandler = () => {
+      skipped = true;
+    };
+
+    document.addEventListener('keydown', skipHandler, { once: false });
+    document.addEventListener('click', skipHandler, { once: false });
+
+    for (let i = 0; i < bootLines.length; i++) {
+      if (skipped) break;
+
+      const line = bootLines[i];
+
+      // Optional per-line delay
+      if (line.delay && !reducedMotion) {
+        await sleep(line.delay);
+        if (skipped) break;
+      }
+
+      const el = createLineElement(line);
+      body.appendChild(el);
+
+      // Trigger the visibility transition
+      if (!reducedMotion) {
+        el.offsetHeight; // reflow
+        el.classList.add('is-visible');
+        await sleep(LINE_DELAY);
+      } else {
+        el.classList.add('is-visible');
+      }
+
+      // Auto-scroll to bottom
+      body.scrollTop = body.scrollHeight;
+    }
+
+    // If skipped, render all remaining lines instantly
+    if (skipped) {
+      const rendered = body.children.length;
+      for (let i = rendered; i < bootLines.length; i++) {
+        const el = createLineElement(bootLines[i]);
+        el.classList.add('is-visible');
+        body.appendChild(el);
+      }
+      body.scrollTop = body.scrollHeight;
+    }
+
+    // Clean up skip listeners
+    document.removeEventListener('keydown', skipHandler);
+    document.removeEventListener('click', skipHandler);
+
+    // Brief pause before closing
+    if (!reducedMotion) {
+      await sleep(skipped ? 100 : 500);
+    }
+
+    // 3. Closing animation
+    overlay.classList.remove('is-open');
+    overlay.classList.add('is-closing');
+
+    if (!reducedMotion) {
+      await sleep(BOOT_TRANSITION_MS);
+    }
+
+    overlay.classList.add('is-done');
+    overlay.classList.remove('is-closing');
+
+    // Mark as complete for this session
+    sessionStorage.setItem(BOOT_SESSION_KEY, 'true');
+
+    // Dispatch event for other components to react to
+    document.dispatchEvent(new CustomEvent('boot-complete'));
+  }
+
+  function createLineElement(line) {
+    const div = document.createElement('div');
+    div.className = 'boot-line';
+
+    const statusSpan = document.createElement('span');
+    statusSpan.className = `boot-status boot-status-${line.status.toLowerCase()}`;
+    statusSpan.textContent = `[ ${line.status} ]`;
+
+    const textSpan = document.createElement('span');
+    textSpan.className = 'boot-text';
+    textSpan.textContent = ` ${line.text}`;
+
+    div.appendChild(statusSpan);
+    div.appendChild(textSpan);
+
+    return div;
+  }
+
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+</script>

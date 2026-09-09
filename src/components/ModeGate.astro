@@ -1,0 +1,165 @@
+---
+/**
+ * ModeGate — Y/N branch prompt shown after boot sequence.
+ * Intercepts the user before showing the main site.
+ */
+---
+
+<div id="mode-gate" class="mode-gate" aria-hidden="true">
+  <div class="mode-prompt">
+    <p class="prompt-text">Are you a Windows user?</p>
+    <div class="prompt-options">
+      <button class="mode-btn" data-mode="graphical">
+        <span class="key-hint">[Y]</span> Yes, I can only use GUI (skill issue)
+      </button>
+      <button class="mode-btn" data-mode="terminal">
+        <span class="key-hint">[N]</span> No, I use Linux (Terminal)
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .mode-gate {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-overlay);
+    background-color: var(--bg-base);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 300ms ease;
+  }
+
+  /* Show the gate */
+  .mode-gate.is-active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mode-prompt {
+    background-color: var(--bg-panel-solid);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-structural);
+    padding: 2rem;
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+  }
+
+  .prompt-text {
+    font-size: var(--font-size-xl);
+    color: var(--text-primary);
+    margin-bottom: 2rem;
+  }
+
+  .prompt-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .mode-btn {
+    background: none;
+    border: 1px solid var(--border-strong);
+    padding: 1rem;
+    color: var(--text-muted);
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color var(--transition-instant), color var(--transition-instant);
+  }
+
+  .mode-btn:hover, .mode-btn:focus-visible {
+    border-color: var(--accent);
+    color: var(--text-primary);
+    outline: none;
+  }
+
+  .key-hint {
+    color: var(--term-yellow);
+    font-weight: 700;
+    margin-right: 0.5rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mode-gate {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const MODE_KEY = 'portfolio-mode';
+  const gate = document.getElementById('mode-gate');
+  const btns = document.querySelectorAll('.mode-btn');
+
+  let gateActive = false;
+
+  // Listen for the boot-complete event from BootScreen.astro
+  document.addEventListener('boot-complete', () => {
+    checkMode();
+  });
+
+  // Also check on load in case boot was already skipped this session
+  if (sessionStorage.getItem('portfolio-boot-complete')) {
+    // Small timeout to let Astro hydrate before immediately running
+    setTimeout(checkMode, 50);
+  }
+
+  function checkMode() {
+    const savedMode = sessionStorage.getItem(MODE_KEY);
+    if (savedMode) {
+      // Already decided, tell the app
+      dispatchMode(savedMode);
+    } else {
+      // Show gate
+      gateActive = true;
+      gate.classList.add('is-active');
+      gate.removeAttribute('aria-hidden');
+      
+      // Focus first button for accessibility
+      if (btns[0] instanceof HTMLElement) btns[0].focus();
+    }
+  }
+
+  function selectMode(mode) {
+    if (!gateActive) return;
+    
+    sessionStorage.setItem(MODE_KEY, mode);
+    gateActive = false;
+    
+    // Hide gate
+    gate.classList.remove('is-active');
+    gate.setAttribute('aria-hidden', 'true');
+    
+    // Tell app
+    dispatchMode(mode);
+  }
+
+  function dispatchMode(mode) {
+    document.dispatchEvent(new CustomEvent('mode-selected', { detail: { mode } }));
+  }
+
+  // Click handlers
+  btns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const mode = e.currentTarget.getAttribute('data-mode');
+      if (mode) selectMode(mode);
+    });
+  });
+
+  // Keyboard handlers (Y/N)
+  document.addEventListener('keydown', (e) => {
+    if (!gateActive) return;
+    
+    const key = e.key.toLowerCase();
+    if (key === 'y') {
+      selectMode('graphical');
+    } else if (key === 'n') {
+      selectMode('terminal');
+    }
+  });
+</script>

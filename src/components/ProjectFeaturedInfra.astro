@@ -1,0 +1,494 @@
+---
+import ProjectFeaturedHeader from './ProjectFeaturedHeader.astro';
+
+const { project } = Astro.props;
+---
+
+<article class="featured-project reveal" data-slug={project.slug}>
+  <!-- Shared Header -->
+  <ProjectFeaturedHeader project={project} />
+
+  <!-- Infrastructure Layout -->
+  <div class="infra-layout">
+    
+    <!-- Left: Architecture Diagram -->
+    <div class="infra-diagram">
+      
+      <!-- Hardware -->
+      {project.hardware && (
+        <div class="infra-node-wrapper reveal-node" data-log-msg={`[boot] detecting hardware: ${project.hardware.model}... OK`}>
+          <button class="infra-node node-hw" aria-expanded="false" aria-controls="hw-details">
+            <span class="node-icon">🖥️</span>
+            <span class="node-title">{project.hardware.model}</span>
+            <span class="node-action">[+]</span>
+          </button>
+          <div id="hw-details" class="node-details">
+            <p>CPU: {project.hardware.cpu}</p>
+            <p>Storage: {project.hardware.storage}</p>
+          </div>
+          <div class="infra-line"></div>
+        </div>
+      )}
+
+      <!-- Core / Hypervisor -->
+      {project.core && (
+        <div class="infra-node-wrapper reveal-node" data-log-msg={`[init] loading hypervisor: ${project.core[0]}... OK`}>
+          <div class="infra-node node-core">
+            <span class="node-icon">⬡</span>
+            <span class="node-title">{project.core.join(' + ')}</span>
+          </div>
+          <div class="infra-line"></div>
+        </div>
+      )}
+
+      <!-- Environments -->
+      {project.environments && (
+        <div class="infra-environments-wrapper reveal-node" data-log-msg={`[vm] starting isolated environments... OK`}>
+          <div class="environments-stack">
+            {project.environments.map((env: any, idx: number) => (
+              <button class="infra-node node-env" aria-expanded="false" aria-controls={`env-details-${idx}`}>
+                <span class="node-title">{env.name}</span>
+                <span class="node-action">[+]</span>
+              </button>
+              <div id={`env-details-${idx}`} class="node-details env-details">
+                <p>{env.desc}</p>
+              </div>
+            ))}
+          </div>
+          <div class="infra-line"></div>
+        </div>
+      )}
+
+      <!-- Remote Access -->
+      {project.remote && (
+        <div class="infra-remote-wrapper reveal-node" data-log-msg={`[net] initializing remote access tunnels... OK`}>
+          <div class="remote-stack">
+            <div class="remote-device">
+              <span class="node-icon">📱</span> Remote Devices
+            </div>
+            <div class="remote-paths">
+              {project.remote.map((r: any) => (
+                <div class={`remote-path path-${r.type}`}>
+                  <span class="path-line">↓</span>
+                  <span class="path-name">{r.name} ({r.role})</span>
+                </div>
+              ))}
+            </div>
+            <div class="infra-node node-lab">
+              <span class="node-icon">◈</span> Protected Lab Environment
+            </div>
+          </div>
+        </div>
+      )}
+
+    </div>
+
+    <!-- Right: Terminal Status Log -->
+    <div class="infra-log">
+      <div class="log-window">
+        <div class="log-header">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="log-title">syslog — tail -f</span>
+        </div>
+        <div class="log-body" id={`log-body-${project.slug}`} aria-live="polite">
+          <p class="log-line"><span class="log-time">00:00:00</span> system power on</p>
+          <!-- JS will inject lines here -->
+          <p class="log-cursor">_</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</article>
+
+<style>
+  .featured-project {
+    background-color: var(--bg-panel-solid);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-structural);
+    padding: 2.5rem;
+    width: 100%;
+    transition: border-color 0.3s ease;
+  }
+
+  .featured-project:hover {
+    border-color: var(--border-strong);
+  }
+
+  .infra-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: start;
+    background: var(--bg-base);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-structural);
+    padding: 2rem;
+  }
+
+  @media (min-width: 900px) {
+    .infra-layout {
+      grid-template-columns: 1fr 300px;
+    }
+  }
+
+  /* Left: Diagram */
+  .infra-diagram {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .infra-node-wrapper, .infra-environments-wrapper, .infra-remote-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .infra-node {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 320px;
+    padding: 1rem;
+    background: var(--bg-panel-solid);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-structural);
+    color: var(--text-primary);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    transition: border-color 0.2s ease;
+  }
+
+  button.infra-node {
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  button.infra-node:hover, button.infra-node:focus-visible {
+    border-color: var(--border-strong);
+    outline: none;
+  }
+
+  button.infra-node:focus-visible {
+    border-color: var(--accent);
+  }
+
+  button.infra-node[aria-expanded="true"] {
+    border-color: var(--accent);
+  }
+
+  .node-icon {
+    font-size: var(--font-size-lg);
+  }
+
+  .node-action {
+    margin-left: auto;
+    font-size: var(--font-size-sm);
+    color: var(--accent);
+    font-family: var(--font-mono);
+  }
+
+  button.infra-node[aria-expanded="true"] .node-action {
+    color: var(--term-red);
+  }
+
+  .node-details {
+    width: 100%;
+    max-width: 320px;
+    font-size: var(--font-size-sm);
+    color: var(--text-muted-2);
+    font-family: var(--font-mono);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    background: rgba(0,0,0,0.2);
+    border-radius: 0 0 var(--radius-structural) var(--radius-structural);
+    margin-top: -4px;
+    text-align: center;
+  }
+
+  button.infra-node[aria-expanded="true"] + .node-details {
+    max-height: 100px;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-top: none;
+  }
+
+  /* Node variations */
+  .node-hw { border-color: var(--border-strong); }
+  .node-core { border-color: var(--term-blue); color: var(--term-blue); }
+  .node-env { border-color: var(--border); font-size: var(--font-size-sm); padding: 0.75rem; }
+  .node-lab { border-color: var(--term-green); color: var(--term-green); }
+
+  /* Environments Stack */
+  .environments-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    width: 100%;
+    max-width: 320px;
+    padding: 1rem;
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-structural);
+  }
+
+  .env-details {
+    margin-top: 0;
+  }
+
+  /* Lines */
+  .infra-line {
+    width: 2px;
+    height: 32px;
+    background: var(--border);
+  }
+
+  /* Remote Stack */
+  .remote-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .remote-device {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .remote-paths {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .remote-path {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 10px;
+    color: var(--text-muted-2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .path-line {
+    color: var(--accent);
+    margin-bottom: 4px;
+    animation: flowDown 1.5s infinite;
+  }
+
+  .path-backup .path-line {
+    color: var(--term-yellow);
+    animation-delay: 0.75s;
+    opacity: 0.5;
+  }
+
+  @keyframes flowDown {
+    0% { transform: translateY(-4px); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateY(4px); opacity: 0; }
+  }
+
+  /* Right: Terminal Log */
+  .infra-log {
+    position: sticky;
+    top: 2rem;
+  }
+
+  .log-window {
+    background: var(--bg-panel-solid);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-structural);
+    overflow: hidden;
+    font-family: var(--font-mono);
+  }
+
+  .log-header {
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .log-header .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--border-strong);
+  }
+
+  .log-title {
+    margin-left: auto;
+    font-size: 10px;
+    color: var(--text-muted-2);
+    letter-spacing: 0.05em;
+  }
+
+  .log-body {
+    padding: 1rem;
+    font-size: 12px;
+    line-height: 1.6;
+    height: 250px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .log-line {
+    color: var(--text-primary);
+    margin: 0;
+    opacity: 0;
+    animation: fadeInLog 0.2s forwards;
+  }
+
+  .log-time {
+    color: var(--text-muted-2);
+    margin-right: 0.5rem;
+  }
+
+  .log-cursor {
+    color: var(--accent);
+    animation: blink 1s step-end infinite;
+    margin: 0;
+  }
+
+  @keyframes fadeInLog {
+    to { opacity: 1; }
+  }
+  
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 600px) {
+    .featured-project {
+      padding: 1.5rem;
+    }
+    .infra-layout {
+      padding: 1rem;
+    }
+  }
+
+  /* Scroll Reveal & Motion */
+  .reveal-node {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .reveal-node.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-node {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .path-line {
+      animation: none;
+    }
+    .log-cursor {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  // Setup node expand/collapse
+  document.querySelectorAll('.infra-node[aria-expanded]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      
+      // Close all others in the same stack (for environments)
+      const parentStack = btn.closest('.environments-stack');
+      if (parentStack) {
+        parentStack.querySelectorAll('.infra-node[aria-expanded="true"]').forEach(other => {
+          if (other !== btn) {
+            other.setAttribute('aria-expanded', 'false');
+            const otherIcon = other.querySelector('.node-action');
+            if (otherIcon) otherIcon.textContent = '[+]';
+          }
+        });
+      }
+
+      // Toggle current
+      btn.setAttribute('aria-expanded', String(!expanded));
+      const action = btn.querySelector('.node-action');
+      if (action) {
+        action.textContent = !expanded ? '[-]' : '[+]';
+      }
+    });
+  });
+
+  // Setup Terminal Log Scroll Observer
+  const logBodies = document.querySelectorAll('.log-body');
+  
+  // Format current time HH:MM:SS
+  const getTime = () => {
+    const d = new Date();
+    return d.toTimeString().split(' ')[0];
+  };
+
+  logBodies.forEach(logBody => {
+    const cursor = logBody.querySelector('.log-cursor');
+    const container = logBody.closest('.featured-project');
+    if (!container) return;
+
+    const nodesToReveal = container.querySelectorAll('.reveal-node');
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el = entry.target as HTMLElement;
+          
+          // Reveal node
+          el.classList.add('is-visible');
+          
+          // Print to log
+          const msg = el.getAttribute('data-log-msg');
+          if (msg && cursor) {
+            const line = document.createElement('p');
+            line.className = 'log-line';
+            line.innerHTML = `<span class="log-time">${getTime()}</span> ${msg}`;
+            logBody.insertBefore(line, cursor);
+            logBody.scrollTop = logBody.scrollHeight;
+          }
+          
+          observer.unobserve(el);
+        }
+      });
+    }, { rootMargin: '0px 0px -15% 0px', threshold: 0.5 });
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      nodesToReveal.forEach(el => {
+        el.classList.add('is-visible');
+        const msg = el.getAttribute('data-log-msg');
+        if (msg && cursor) {
+          const line = document.createElement('p');
+          line.className = 'log-line';
+          line.innerHTML = `<span class="log-time">${getTime()}</span> ${msg}`;
+          logBody.insertBefore(line, cursor);
+        }
+      });
+    } else {
+      nodesToReveal.forEach(el => observer.observe(el));
+    }
+  });
+</script>

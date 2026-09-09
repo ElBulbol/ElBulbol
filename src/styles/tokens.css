@@ -1,0 +1,52 @@
+:root {
+  /* backgrounds */
+  --bg-base: #0a0a0a;
+  --bg-panel: rgba(20,20,20,0.85);
+  --bg-panel-solid: #141414;
+
+  /* text */
+  --text-primary: #eeeeee;
+  --text-muted: #aaaaaa;
+  --text-muted-2: #8a8686;
+
+  /* structure */
+  --border: #2b2b2b;
+  --border-strong: #404040;
+
+  /* accent — chrome only, used sparingly */
+  --accent: #7aa2f7;
+  --accent-warn: #ffa500;
+
+  /* content-only palette — NEVER for chrome/UI, only code blocks, logs, syntax highlighting */
+  --term-red: #f7768e;
+  --term-green: #9ece6a;
+  --term-yellow: #e0af68;
+  --term-blue: #7aa2f7;
+  --term-magenta: #bb9af7;
+  --term-cyan: #7dcfff;
+
+  /* typography */
+  --font-mono: 'JetBrains Mono Variable', monospace;
+  --font-size-base: 16px;
+  --font-size-sm: 14px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
+  --font-size-2xl: 32px;
+  --font-size-3xl: 48px;
+  --line-height: 1.6;
+
+  /* radius — from real sway/wofi config */
+  --radius-structural: 6px;   /* cards, sections, page containers — corner_radius 6 in sway */
+  --radius-overlay: 10px;     /* modals, command palette, tooltips — wofi popup radius */
+
+  /* transitions */
+  --transition-instant: 80ms;
+  --transition-boot: 250ms;
+
+  /* z-index layers */
+  --z-cursor: 9999;
+  --z-boot: 9000;
+  --z-overlay: 8000;
+  --z-nav: 7000;
+  --z-content: 1;
+}

@@ -1,0 +1,287 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import About from '../components/About.astro';
+import Projects from '../components/Projects.astro';
+---
+
+<BaseLayout>
+  <!-- Floating Mode Switch Button -->
+  <button id="mode-switch-btn" class="mode-switch-btn" aria-hidden="true">
+    <span id="mode-switch-text"></span>
+  </button>
+  <!-- Main Graphical Site -->
+  <div id="mode-graphical" class="mode-container" aria-hidden="true">
+    <section class="hero">
+      <div class="hero-content">
+        <p class="hero-label">// SOC Analyst & Cybersecurity</p>
+        <h1 class="hero-name">Belal Alshref</h1>
+        <p class="hero-tagline">All I want is to become undeniable.</p>
+      </div>
+    </section>
+    
+    <About />
+    <Projects />
+  </div>
+
+  <!-- Terminal Mode Island -->
+  <div id="mode-terminal" class="mode-container" aria-hidden="true">
+    <div class="terminal-island">
+      <div class="terminal-header">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="title">belal@portfolio ~</span>
+      </div>
+      <div class="terminal-body">
+        <p class="term-line"><span class="prompt">[belal@portfolio ~]$</span> ls -l</p>
+        <p class="term-line output">
+          <span class="dir">drwxr-xr-x</span> 2 belal root 4096 <span class="dir-name">projects</span><br/>
+          <span class="dir">drwxr-xr-x</span> 2 belal root 4096 <span class="dir-name">skills</span><br/>
+          <span class="file">-rw-r--r--</span> 1 belal root 1024 <span class="file-name">about.txt</span><br/>
+          <span class="file">-rw-r--r--</span> 1 belal root  512 <span class="file-name">contact.txt</span>
+        </p>
+        <p class="term-line"><span class="prompt">[belal@portfolio ~]$</span> <span class="cursor-block"></span></p>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .mode-switch-btn {
+    position: fixed;
+    top: 2rem;
+    left: 2rem;
+    z-index: 100;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-structural);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-sm);
+    transition: opacity 300ms ease, border-color var(--transition-instant), color var(--transition-instant);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .mode-switch-btn.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mode-switch-btn.is-hidden-scroll {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  .mode-switch-btn:hover {
+    border-color: var(--accent);
+    color: var(--text-primary);
+  }
+
+  .mode-container {
+    display: none;
+    opacity: 0;
+    transition: opacity 300ms ease;
+  }
+
+  .mode-container.is-visible {
+    display: block;
+    /* Small delay so opacity transition happens after display:block */
+    animation: fadeIn 300ms forwards;
+  }
+
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+
+  /* Graphical Hero */
+  .hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+  }
+
+  .hero-content {
+    text-align: center;
+    z-index: 2; /* above mouse glow */
+  }
+
+  .hero-label {
+    color: var(--text-muted-2);
+    font-size: var(--font-size-xl);
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+  }
+
+  .hero-name {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-tagline {
+    color: var(--text-muted);
+    font-size: var(--font-size-xl);
+    max-width: 700px;
+    margin: 0 auto;
+    font-style: italic;
+  }
+
+  /* Terminal Stub */
+  #mode-terminal {
+    min-height: 100vh;
+    padding: 2rem;
+    display: none; /* hidden by default */
+  }
+
+  #mode-terminal.is-visible {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .terminal-island {
+    width: 100%;
+    max-width: 800px;
+    background-color: var(--bg-panel-solid);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-structural);
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    z-index: 2;
+  }
+
+  .terminal-header {
+    background-color: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .terminal-header .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--border-strong);
+  }
+
+  .terminal-header .title {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: var(--font-size-sm);
+    color: var(--text-muted-2);
+  }
+
+  .terminal-body {
+    padding: 1.5rem;
+    font-size: var(--font-size-lg);
+    line-height: 1.6;
+    color: var(--text-primary);
+  }
+
+  .prompt {
+    color: var(--term-green);
+    margin-right: 0.5rem;
+    font-weight: bold;
+  }
+
+  .output {
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+
+  .dir { color: var(--term-blue); }
+  .file { color: var(--text-muted-2); }
+  .dir-name { color: var(--term-blue); font-weight: bold; }
+  .file-name { color: var(--text-primary); }
+
+  .cursor-block {
+    display: inline-block;
+    width: 10px;
+    height: 1.2em;
+    background-color: var(--accent);
+    vertical-align: middle;
+  }
+</style>
+
+<script>
+  const graphicalMode = document.getElementById('mode-graphical');
+  const terminalMode = document.getElementById('mode-terminal');
+  const modeSwitchBtn = document.getElementById('mode-switch-btn');
+  const modeSwitchText = document.getElementById('mode-switch-text');
+
+  let currentMode = '';
+
+  // Listen for mode selection from ModeGate
+  document.addEventListener('mode-selected', (e) => {
+    // @ts-ignore
+    const mode = e.detail.mode;
+    currentMode = mode;
+    
+    if (modeSwitchBtn && modeSwitchText) {
+      modeSwitchBtn.classList.add('is-visible');
+      modeSwitchBtn.removeAttribute('aria-hidden');
+      modeSwitchText.textContent = mode === 'terminal' 
+        ? '[<] Graphical Mode' 
+        : '[<] Terminal Mode';
+      
+      // Reset scroll hidden state on mode switch
+      modeSwitchBtn.classList.remove('is-hidden-scroll');
+    }
+    
+    if (mode === 'terminal') {
+      if (graphicalMode) {
+        graphicalMode.classList.remove('is-visible');
+        graphicalMode.setAttribute('aria-hidden', 'true');
+      }
+      if (terminalMode) {
+        terminalMode.classList.add('is-visible');
+        terminalMode.removeAttribute('aria-hidden');
+      }
+    } else {
+      if (terminalMode) {
+        terminalMode.classList.remove('is-visible');
+        terminalMode.setAttribute('aria-hidden', 'true');
+      }
+      if (graphicalMode) {
+        graphicalMode.classList.add('is-visible');
+        graphicalMode.removeAttribute('aria-hidden');
+      }
+    }
+  });
+
+  // Handle mode switch button click
+  if (modeSwitchBtn) {
+    modeSwitchBtn.addEventListener('click', () => {
+      const newMode = currentMode === 'terminal' ? 'graphical' : 'terminal';
+      sessionStorage.setItem('portfolio-mode', newMode);
+      document.dispatchEvent(new CustomEvent('mode-selected', { detail: { mode: newMode } }));
+      
+      // Scroll to top when switching
+      window.scrollTo(0, 0);
+    });
+  }
+
+  // Handle scroll to hide button in graphical mode
+  window.addEventListener('scroll', () => {
+    if (!modeSwitchBtn || currentMode !== 'graphical') return;
+    
+    if (window.scrollY > 100) {
+      modeSwitchBtn.classList.add('is-hidden-scroll');
+    } else {
+      modeSwitchBtn.classList.remove('is-hidden-scroll');
+    }
+  }, { passive: true });
+
+  // Check on initial load if we already bypassed the gate
+  const savedMode = sessionStorage.getItem('portfolio-mode');
+  if (savedMode) {
+    document.dispatchEvent(new CustomEvent('mode-selected', { detail: { mode: savedMode } }));
+  }
+</script>
