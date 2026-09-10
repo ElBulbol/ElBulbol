@@ -16,17 +16,6 @@
     cursor: none !important;
   }
 
-  /* ANI files animate reliably when used as real cursors, not background images. */
-  :global(html.custom-cursor-active.cursor-idle-active),
-  :global(html.custom-cursor-active.cursor-idle-active *) {
-    cursor: url('/cursors/lancer-busy-alt.ani'), wait !important;
-  }
-
-  :global(html.custom-cursor-active.cursor-working-active),
-  :global(html.custom-cursor-active.cursor-working-active *) {
-    cursor: url('/cursors/lancer-working-in-background.ani'), wait !important;
-  }
-
   .custom-cursor {
     position: fixed;
     top: 0;
@@ -54,19 +43,15 @@
   }
 
   .custom-cursor.is-idle {
-    background-image: url('/cursors/lancer-busy-alt.ani');
+    background-image: url('/cursors/lancer-busy-alt.gif');
   }
 
   .custom-cursor.is-busy {
-    background-image: url('/cursors/lancer-working-in-background.ani');
+    background-image: url('/cursors/lancer-unavailable.cur');
   }
 
   .custom-cursor.is-visible {
     opacity: 1;
-  }
-
-  .custom-cursor.is-native-animated {
-    opacity: 0 !important;
   }
 
   /* Fallback for touch / reduced motion */
@@ -98,14 +83,10 @@
         hoveredInteractive.hasAttribute('disabled') || hoveredInteractive.getAttribute('aria-disabled') === 'true'
       ));
       const useWorkingCursor = (isWorking || isBusyControl) && !isUnavailable;
-      const useIdleCursor = cursor.classList.contains('is-idle') && !useWorkingCursor && !isUnavailable;
 
       cursor.classList.toggle('is-busy', useWorkingCursor);
       cursor.classList.toggle('is-disabled', isUnavailable);
       cursor.classList.toggle('is-hovering', Boolean(hoveredInteractive) && !isWorking && !isBusyControl && !isUnavailable);
-      cursor.classList.toggle('is-native-animated', useWorkingCursor || useIdleCursor);
-      document.documentElement.classList.toggle('cursor-working-active', useWorkingCursor);
-      document.documentElement.classList.toggle('cursor-idle-active', useIdleCursor);
     };
 
     const resetIdleTimer = () => {
