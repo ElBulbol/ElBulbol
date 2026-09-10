@@ -9,7 +9,7 @@ export const mentorship = {
     { value: '1', label: 'community site built & maintained (osc-must.github.io)' },
   ],
   topics: [
-    'Linux/Unix fundamentals — filesystem hierarchy, permissions, process management, systemd',
+    'Linux/Unix fundamentals, including filesystem hierarchy, permissions, process management, and systemd',
     'Shell scripting',
     'Package management across distros (apt vs pacman vs dnf)',
     'Git & GitHub workflows',

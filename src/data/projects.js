@@ -109,21 +109,21 @@ export const projects = [
       {
         name: 'Plaintext Credentials',
         payload: null,
-        description: 'Passwords stored and compared in plaintext — no hashing.',
+        description: 'Passwords stored and compared in plaintext, with no hashing.',
       },
     ],
     defense: [
       {
         name: 'ModSecurity',
-        description: 'Web application firewall with OWASP Core Rule Set — blocks SQLi, XSS, and malicious payloads at the HTTP layer.',
+        description: 'Web application firewall with OWASP Core Rule Set that blocks SQLi, XSS, and malicious payloads at the HTTP layer.',
       },
       {
         name: 'Suricata IDS/IPS',
-        description: 'Network-level intrusion detection and prevention — inspects traffic for known attack signatures.',
+        description: 'Network-level intrusion detection and prevention that inspects traffic for known attack signatures.',
       },
       {
         name: 'pfSense',
-        description: 'Network firewall — controls traffic flow and enforces network-level access policies.',
+        description: 'Network firewall that controls traffic flow and enforces network-level access policies.',
       },
     ],
     certification: {

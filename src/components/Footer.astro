@@ -41,17 +41,11 @@ const isPrimaryContact = (label: string) => label === 'email' || label === 'disc
     <p class="closing-line" aria-live="polite"><span>[belal@portfolio ~]$</span> <span data-closing-copy>echo "thanks for stopping by"</span></p>
   </div>
   <aside class="footer-secret" aria-label="A hidden personal corner">
-    <button class="footer-secret-trigger" type="button" aria-expanded="false" aria-controls="footer-secret-dialog" aria-label="A small hidden signal. Reveal it." data-footer-secret-trigger>
+    <button class="footer-secret-trigger" type="button" aria-expanded="false" aria-label="A small hidden signal. Reveal it." data-footer-secret-trigger>
       <span class="footer-secret-sprite" aria-hidden="true"></span>
       <span class="footer-secret-invite" aria-hidden="true"><small>signal detected <i>_</i></small><span>Do you want to know more about me?</span><em>[ explore ↵ ]</em></span>
     </button>
   </aside>
-  <div class="footer-secret-overlay" data-footer-secret-overlay aria-hidden="true" hidden>
-    <section id="footer-secret-dialog" class="footer-secret-dialog" role="dialog" aria-modal="true" aria-labelledby="footer-secret-title" aria-describedby="footer-secret-copy" tabindex="-1">
-      <header><span>[belal@portfolio ~]$ access ~/.config/belal_XD</span><button type="button" data-footer-secret-close aria-label="Close personal-space confirmation">×</button></header>
-      <form data-footer-secret-form><span>~/lancer/heads-up</span><h2 id="footer-secret-title">Lancer // Personal-only space</h2><p id="footer-secret-copy">Everything past this point is about Belal — interests, hobbies, small stories, and whatever catches his attention. It is not the technical portfolio.</p><label for="footer-secret-confirmation">Type <code>I know</code> to continue.</label><div><input id="footer-secret-confirmation" data-footer-secret-input autocomplete="off" spellcheck="false" placeholder="I know" /><button type="submit" data-footer-secret-submit disabled>enter ↵</button></div><small data-footer-secret-status aria-live="polite">waiting for acknowledgement</small></form>
-    </section>
-  </div>
 </footer>
 
 <style>
@@ -69,10 +63,9 @@ const isPrimaryContact = (label: string) => label === 'email' || label === 'disc
   .tryhackme-logo::after { content:none; }
   .contact-link:hover .tryhackme-logo,.contact-link:focus-visible .tryhackme-logo { box-shadow:0 0 10px rgba(122,162,247,.35); color:var(--accent); }
   .footer-secret { bottom:0; display:flex; justify-content:flex-start; left:0; overflow:hidden; position:absolute; width:min(100%,342px); }.footer-secret-trigger { align-items:center; appearance:none; background:transparent; border:0; color:var(--text-primary); cursor:pointer; display:flex; font:inherit; gap:.7rem; height:104px; overflow:hidden; padding:0; text-align:left; transition:width 260ms cubic-bezier(.2,.8,.2,1); width:34px; }.footer-secret-sprite { align-self:flex-end; background:center/104px 104px no-repeat url('../../lancer-deltarune.gif'); display:block; flex:0 0 104px; height:104px; transform:translateX(-70px); transition:transform 260ms cubic-bezier(.2,.8,.2,1); }.footer-secret-invite { border-left:1px solid var(--border-strong); display:grid; flex:0 0 226px; gap:.2rem; opacity:0; padding:.15rem 0 .15rem .7rem; transform:translateX(-8px); transition:opacity 130ms ease 40ms,transform 220ms ease 40ms; }.footer-secret-invite small { color:var(--text-muted-2); font-size:10px; letter-spacing:.04em; }.footer-secret-invite i { animation:footer-secret-cursor .8s steps(1,end) infinite; color:var(--accent); font-style:normal; }.footer-secret-invite span { color:var(--text-primary); font-size:11px; line-height:1.45; }.footer-secret-invite em { color:var(--accent); font-size:10px; font-style:normal; margin-top:.15rem; }.footer-secret:hover .footer-secret-trigger,.footer-secret:focus-within .footer-secret-trigger,.footer-secret.is-revealed .footer-secret-trigger { width:332px; }.footer-secret:hover .footer-secret-sprite,.footer-secret:focus-within .footer-secret-sprite,.footer-secret.is-revealed .footer-secret-sprite { transform:none; }.footer-secret:hover .footer-secret-invite,.footer-secret:focus-within .footer-secret-invite,.footer-secret.is-revealed .footer-secret-invite { opacity:1; transform:none; }.footer-secret-trigger:focus-visible { outline:1px solid var(--accent); outline-offset:3px; }
-  :global(body.footer-secret-open) { overflow:hidden; }.footer-secret-overlay { align-items:center; background:rgba(3,4,8,.82); display:flex; inset:0; justify-content:center; opacity:0; padding:1rem; pointer-events:none; position:fixed; transition:opacity 180ms ease; z-index:var(--z-overlay); }.footer-secret-overlay[hidden] { display:none; }.footer-secret-overlay.is-open { opacity:1; pointer-events:auto; }.footer-secret-dialog { background:var(--bg-panel-solid); border:1px solid var(--border-strong); box-shadow:0 20px 70px rgba(0,0,0,.6); max-width:540px; opacity:0; transform:translateY(10px) scale(.985); transition:opacity 180ms ease,transform 180ms ease; width:100%; }.footer-secret-overlay.is-open .footer-secret-dialog { opacity:1; transform:none; }.footer-secret-dialog header { align-items:center; background:rgba(122,162,247,.035); border-bottom:1px solid var(--border); color:var(--text-muted-2); display:flex; font-size:10px; justify-content:space-between; padding:.6rem .8rem; }.footer-secret-dialog header button { background:transparent; border:0; color:var(--text-muted); cursor:pointer; font:inherit; font-size:19px; line-height:1; }.footer-secret-dialog header button:focus-visible { outline:1px solid var(--accent); }.footer-secret-dialog form { display:grid; gap:.8rem; padding:1.5rem; text-align:left; }.footer-secret-dialog form > span { color:var(--accent); font-size:10px; }.footer-secret-dialog h2 { color:var(--text-primary); font-size:clamp(1.25rem,3vw,1.7rem); letter-spacing:-.04em; margin:0; }.footer-secret-dialog p { color:var(--text-muted); font-size:12px; line-height:1.75; margin:0; }.footer-secret-dialog label { color:var(--text-muted); font-size:11px; margin-top:.35rem; }.footer-secret-dialog code { color:var(--accent); font-family:inherit; }.footer-secret-dialog form > div { display:flex; }.footer-secret-dialog input { background:var(--bg-base); border:1px solid var(--border); border-right:0; color:var(--text-primary); font:inherit; font-size:12px; min-width:0; outline:none; padding:.7rem; width:100%; }.footer-secret-dialog input:focus { border-color:var(--accent); }.footer-secret-dialog form > div button { background:var(--accent); border:1px solid var(--accent); color:var(--bg-base); cursor:pointer; font:inherit; font-size:11px; padding:.7rem .9rem; }.footer-secret-dialog form > div button:disabled { background:var(--border); border-color:var(--border); color:var(--text-muted-2); cursor:not-allowed; }.footer-secret-dialog form > small { color:var(--text-muted-2); font-size:10px; }.footer-secret-dialog form > small.is-ready { color:var(--term-green); }
   @keyframes footer-secret-cursor { 50% { opacity:0; } }
   @media (max-width:640px) { .footer-secret { bottom:0; width:294px; }.footer-secret-trigger { height:92px; width:30px; }.footer-secret-sprite { background-size:92px 92px; flex-basis:92px; height:92px; transform:translateX(-62px); }.footer-secret-invite { flex-basis:210px; }.footer-secret.is-revealed .footer-secret-trigger { width:294px; }.footer-secret.is-revealed .footer-secret-sprite { transform:none; }.footer-secret.is-revealed .footer-secret-invite { opacity:1; transform:none; } }
-  @media (prefers-reduced-motion:reduce) { .footer-secret-trigger,.footer-secret-sprite,.footer-secret-invite,.footer-secret-overlay,.footer-secret-dialog { transition:none; }.footer-secret-invite i { animation:none; } }
+  @media (prefers-reduced-motion:reduce) { .footer-secret-trigger,.footer-secret-sprite,.footer-secret-invite { transition:none; }.footer-secret-invite i { animation:none; } }
 </style>
 
 <script>
@@ -117,67 +110,21 @@ const isPrimaryContact = (label: string) => label === 'email' || label === 'disc
 <script>
   const footerSecret = document.querySelector('.footer-secret');
   const footerSecretTrigger = document.querySelector('[data-footer-secret-trigger]') as HTMLButtonElement | null;
-  const footerSecretOverlay = document.querySelector('[data-footer-secret-overlay]') as HTMLElement | null;
-  const footerSecretInput = document.querySelector('[data-footer-secret-input]') as HTMLInputElement | null;
-  const footerSecretSubmit = document.querySelector('[data-footer-secret-submit]') as HTMLButtonElement | null;
-  const footerSecretForm = document.querySelector('[data-footer-secret-form]') as HTMLFormElement | null;
-  const footerSecretClose = document.querySelector('[data-footer-secret-close]') as HTMLButtonElement | null;
-  const footerSecretDialog = document.querySelector('#footer-secret-dialog') as HTMLElement | null;
-  const footerSecretStatus = document.querySelector('[data-footer-secret-status]') as HTMLElement | null;
-  const footerSecretReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const footerSecretTouch = window.matchMedia('(pointer: coarse)').matches;
-  let footerSecretLastFocus: HTMLElement | null = null;
 
-  const revealFooterSecret = () => footerSecret?.classList.add('is-revealed');
-  const closeFooterSecret = () => {
-    if (!footerSecretOverlay || !footerSecretTrigger) return;
-    footerSecretOverlay.classList.remove('is-open');
-    footerSecretOverlay.setAttribute('aria-hidden', 'true');
-    footerSecretTrigger.setAttribute('aria-expanded', 'false');
-    document.body.classList.remove('footer-secret-open');
-    window.setTimeout(() => { footerSecretOverlay.hidden = true; }, footerSecretReducedMotion ? 0 : 180);
-    footerSecretLastFocus?.focus();
+  const revealFooterSecret = () => {
+    footerSecret?.classList.add('is-revealed');
+    footerSecretTrigger?.setAttribute('aria-expanded', 'true');
+    footerSecretTrigger?.setAttribute('aria-label', 'Enter the hidden personal space.');
   };
-  const openFooterSecret = () => {
-    if (!footerSecretOverlay || !footerSecretTrigger) return;
-    footerSecretLastFocus = document.activeElement instanceof HTMLElement ? document.activeElement : footerSecretTrigger;
-    if (footerSecretInput) footerSecretInput.value = '';
-    if (footerSecretSubmit) footerSecretSubmit.disabled = true;
-    footerSecretStatus?.classList.remove('is-ready');
-    if (footerSecretStatus) footerSecretStatus.textContent = 'waiting for acknowledgement';
-    footerSecretOverlay.hidden = false;
-    window.requestAnimationFrame(() => footerSecretOverlay.classList.add('is-open'));
-    footerSecretOverlay.setAttribute('aria-hidden', 'false');
-    footerSecretTrigger.setAttribute('aria-expanded', 'true');
-    document.body.classList.add('footer-secret-open');
-    window.setTimeout(() => footerSecretInput?.focus(), footerSecretReducedMotion ? 0 : 180);
+
+  const enterFooterSecret = () => {
+    if (!footerSecret?.classList.contains('is-revealed')) {
+      revealFooterSecret();
+      return;
+    }
+    document.dispatchEvent(new CustomEvent('personal-space-enter'));
   };
 
   footerSecretTrigger?.addEventListener('focus', revealFooterSecret);
-  footerSecretTrigger?.addEventListener('click', () => {
-    if (footerSecretTouch && !footerSecret?.classList.contains('is-revealed')) { revealFooterSecret(); return; }
-    openFooterSecret();
-  });
-  footerSecretInput?.addEventListener('input', () => {
-    const ready = footerSecretInput.value.trim().toLowerCase() === 'i know';
-    if (footerSecretSubmit) footerSecretSubmit.disabled = !ready;
-    footerSecretStatus?.classList.toggle('is-ready', ready);
-    if (footerSecretStatus) footerSecretStatus.textContent = ready ? 'acknowledgement received — access unlocked' : 'waiting for acknowledgement';
-  });
-  footerSecretForm?.addEventListener('submit', (event) => {
-    event.preventDefault();
-    if (!footerSecretSubmit?.disabled) window.location.assign('/~/.config/belal_XD');
-  });
-  footerSecretClose?.addEventListener('click', closeFooterSecret);
-  footerSecretOverlay?.addEventListener('click', (event) => { if (event.target === footerSecretOverlay) closeFooterSecret(); });
-  document.addEventListener('keydown', (event) => {
-    if (!footerSecretOverlay?.classList.contains('is-open')) return;
-    if (event.key === 'Escape') { event.preventDefault(); closeFooterSecret(); return; }
-    if (event.key !== 'Tab' || !footerSecretDialog) return;
-    const items = [...footerSecretDialog.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled])')];
-    const first = items[0]; const last = items[items.length - 1];
-    if (!first || !last) return;
-    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-    if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
-  });
+  footerSecretTrigger?.addEventListener('click', () => enterFooterSecret());
 </script>

@@ -9,8 +9,8 @@ const { project } = Astro.props;
   <section class="system-hero" aria-labelledby="system-title">
     <div class="system-intro">
       <div>
-        <h4 id="system-title">Codeforces, scheduled and scored — inside Discord.</h4>
-        <p>Members connect their Codeforces accounts, practice problems, challenge each other, and join timed contests — while the bot handles scheduling, scoring, leaderboards, and solve verification.</p>
+        <h4 id="system-title">Codeforces, scheduled and scored inside Discord.</h4>
+        <p>Members connect their Codeforces accounts, practice problems, challenge each other, and join timed contests. The bot handles scheduling, scoring, leaderboards, and solve verification.</p>
         <p class="contribution-line">{project.contribution}</p>
       </div>
       <button class="quiet-action" type="button" data-architecture-run>Run request <span>→</span></button>
@@ -42,7 +42,7 @@ const { project } = Astro.props;
   <div class="interaction-grid">
     <section class="lifecycle-panel" aria-labelledby="lifecycle-title">
       <div class="panel-heading"><h4 id="lifecycle-title">Contest lifecycle</h4><span class="plain-meta">scheduler: 1 min</span></div>
-      <p class="panel-copy">Stored timestamps and contest state drive the transition — the scheduler advances eligible contests without a manual sequence.</p>
+      <p class="panel-copy">Stored timestamps and contest state drive the transition. The scheduler advances eligible contests without a manual sequence.</p>
       <div class="waybar-strip" data-contest-machine aria-label="Contest state machine">
         <button type="button" class="is-current" data-state="0"><i></i><span>PENDING</span><small>Scheduled</small></button>
         <button type="button" data-state="1"><i></i><span>ACTIVE</span><small>Participants solving</small></button>
@@ -64,7 +64,7 @@ const { project } = Astro.props;
 
   <section class="builder-panel" aria-labelledby="builder-title">
     <div class="panel-heading"><h4 id="builder-title">Contest builder</h4><span class="plain-meta">discord.py modal + view</span></div>
-    <p class="panel-copy">Mentors configure a contest through Discord-native modals, buttons, and views — then review the stored plan before it is created.</p>
+      <p class="panel-copy">Mentors configure a contest through Discord-native modals, buttons, and views, then review the stored plan before it is created.</p>
     <button type="button" class="quiet-action launcher-action" data-builder-open>Open contest builder <span>↵</span></button>
     <div class="wofi-overlay" data-builder-overlay aria-hidden="true">
       <div class="wofi-modal" role="dialog" aria-modal="true" aria-label="Contest builder">
@@ -92,7 +92,7 @@ const { project } = Astro.props;
   </section>
 
   <details class="technical-dive" data-technical-dive>
-    <summary><span class="dive-path">~/</span><strong>technical-deep-dive</strong><small>// data flow &amp; storage boundaries</small></summary>
+    <summary><span class="dive-path">cat ./</span><strong>overview_projeect</strong><small>// data flow &amp; storage boundaries</small></summary>
     <div class="dive-content">
       <div class="api-flow"><b>Discord User</b><span>→</span><b>Bot logic</b><span>→</span><b>Codeforces API</b><span>→</span><b>Discord response</b><p><code>user.info</code> account linking &nbsp; <code>problemset.problems</code> selection &nbsp; <code>contest.status</code> solve checks</p></div>
       <div class="database-layers"><div><span>db.db</span><b>Competitive data</b><p>Users · contests · challenges · participants · scores</p></div><div><span>roles_and_channels.db</span><b>Per-guild configuration</b><p>Roles · channels · guild configuration</p></div></div>
