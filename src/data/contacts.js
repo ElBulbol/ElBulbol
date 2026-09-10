@@ -24,4 +24,9 @@ export const contacts = [
     value: 'open profile',
     url: 'https://discord.com/users/1090613731601436724',
   },
+  {
+    label: 'x',
+    value: '@Belal_Alshref',
+    url: 'https://x.com/Belal_Alshref',
+  },
 ];

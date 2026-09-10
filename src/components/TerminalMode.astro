@@ -1,0 +1,1220 @@
+---
+import { terminalFS } from '../data/terminalFS.js';
+import { projects } from '../data/projects.js';
+---
+
+<div id="mode-terminal" class="mode-container" aria-hidden="true">
+  <div class="terminal-island" data-terminal-root>
+    <div class="terminal-header">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+
+      <span class="title">
+        foot &mdash; belal@portfolio:
+        <span data-terminal-cwd>~</span>
+      </span>
+    </div>
+
+    <div
+      class="terminal-body"
+      data-shell-output
+      tabindex="-1"
+    ></div>
+
+    <form class="terminal-input-row" data-terminal-form>
+      <span class="prompt" data-terminal-prompt>
+        [belal@portfolio ~]$
+      </span>
+
+      <input
+        type="text"
+        data-terminal-input
+        autocomplete="off"
+        autocapitalize="off"
+        autocorrect="off"
+        spellcheck="false"
+        aria-label="Terminal command input"
+      />
+    </form>
+  </div>
+</div>
+
+<style>
+  #mode-terminal {
+    display: none;
+    opacity: 0;
+    min-height: 100vh;
+    padding: 2rem;
+    transition: opacity 300ms ease;
+  }
+
+  #mode-terminal.is-visible {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: terminal-fade-in 300ms forwards;
+  }
+
+  @keyframes terminal-fade-in {
+    to {
+      opacity: 1;
+    }
+  }
+
+  .terminal-island {
+    width: 100%;
+    max-width: 800px;
+    background-color: var(--bg-panel-solid);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-structural);
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+    display: flex;
+    flex-direction: column;
+  }
+
+  .terminal-header {
+    background-color: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+    padding: 0.5rem 1rem;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .terminal-header .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--border-strong);
+  }
+
+  .terminal-header .title {
+    margin-left: auto;
+    margin-right: auto;
+
+    font-size: var(--font-size-sm);
+    color: var(--text-muted-2);
+  }
+
+  .terminal-body {
+    padding: 1rem 1.25rem;
+
+    font-size: var(--font-size-sm);
+    line-height: 1.7;
+    color: var(--text-primary);
+
+    max-height: 52vh;
+    min-height: 220px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    scrollbar-width: thin;
+  }
+
+  .term-out-line {
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin-bottom: 0.3rem;
+  }
+
+  .echo-prompt {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .ls-dir {
+    color: var(--term-blue);
+    font-weight: 700;
+  }
+
+  .ls-file {
+    color: var(--text-primary);
+  }
+
+  .term-error {
+    color: var(--term-red);
+  }
+
+  .cat-output {
+    color: var(--text-muted);
+    font: inherit;
+    margin: 0;
+
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .terminal-input-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+
+    border-top: 1px solid var(--border);
+    padding: 0.75rem 1.25rem;
+  }
+
+  .terminal-input-row .prompt {
+    color: var(--term-green);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .terminal-input-row input {
+    flex: 1;
+
+    background: transparent;
+    border: 0;
+    outline: none;
+
+    color: var(--text-primary);
+    font: inherit;
+    font-size: var(--font-size-sm);
+
+    caret-color: var(--accent);
+
+    min-width: 0;
+  }
+</style>
+
+<script define:vars={{ fsData: terminalFS, projectsData: projects }}>
+  console.log('[terminal] script start');
+
+  const root = document.querySelector('[data-terminal-root]');
+
+  if (!root) {
+    console.error('[terminal] root element not found');
+  } else {
+    const out = root.querySelector('[data-shell-output]');
+    const form = root.querySelector('[data-terminal-form]');
+    const input = root.querySelector('[data-terminal-input]');
+    const promptEl = root.querySelector('[data-terminal-prompt]');
+    const cwdEl = root.querySelector('[data-terminal-cwd]');
+
+    console.log('[terminal] elements', {
+      root,
+      out,
+      form,
+      input,
+      promptEl,
+      cwdEl,
+    });
+
+    if (!out || !form || !input || !promptEl || !cwdEl) {
+      console.error(
+        '[terminal] required DOM elements are missing'
+      );
+    } else {
+      console.log('[terminal] all elements found');
+
+      const fs = fsData;
+      const projectsList = Array.isArray(projectsData)
+        ? projectsData
+        : [];
+
+      let cwd = [];
+      let history = [];
+      let historyIndex = -1;
+      let booted = false;
+
+      /*
+       * --------------------------------------------------------
+       * PATH
+       * --------------------------------------------------------
+       */
+
+      const pathLabel = () =>
+        cwd.length
+          ? '~/' + cwd.join('/')
+          : '~';
+
+      const updatePrompt = () => {
+        const label = pathLabel();
+
+        promptEl.textContent =
+          `[belal@portfolio ${label}]$`;
+
+        cwdEl.textContent = label;
+      };
+
+      /*
+       * --------------------------------------------------------
+       * FILESYSTEM
+       * --------------------------------------------------------
+       */
+
+      const getNode = (path) => {
+        let node = fs;
+
+        for (const part of path) {
+          if (
+            !node ||
+            node.type === 'file' ||
+            !node.children ||
+            !node.children[part]
+          ) {
+            return null;
+          }
+
+          node = node.children[part];
+        }
+
+        return node;
+      };
+
+      const resolvePath = (raw) => {
+        raw = String(raw || '').trim();
+
+        if (
+          !raw ||
+          raw === '~' ||
+          raw === '/'
+        ) {
+          return [];
+        }
+
+        const isAbsolute =
+          raw.startsWith('/') ||
+          raw === '~' ||
+          raw.startsWith('~/');
+
+        const base = isAbsolute
+          ? []
+          : [...cwd];
+
+        const cleaned = raw
+          .replace(/^~\/?/, '')
+          .replace(/^\/+/, '');
+
+        for (
+          const part of cleaned
+            .split('/')
+            .filter(Boolean)
+        ) {
+          if (part === '.') {
+            continue;
+          }
+
+          if (part === '..') {
+            if (base.length > 0) {
+              base.pop();
+            }
+
+            continue;
+          }
+
+          base.push(part);
+        }
+
+        return base;
+      };
+
+      /*
+       * --------------------------------------------------------
+       * OUTPUT
+       * --------------------------------------------------------
+       */
+
+      const esc = (value) =>
+        String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+
+      const print = (
+        html,
+        cls = ''
+      ) => {
+        const line =
+          document.createElement('div');
+
+        line.className =
+          `term-out-line ${cls}`;
+
+        line.innerHTML = html;
+
+        out.appendChild(line);
+
+        out.scrollTop =
+          out.scrollHeight;
+      };
+
+      const echo = (command) => {
+        print(
+          `<span class="echo-prompt">${esc(
+            promptEl.textContent || ''
+          )}</span> ${esc(command)}`
+        );
+      };
+
+      /*
+       * --------------------------------------------------------
+       * LS
+       * --------------------------------------------------------
+       */
+
+      const isHidden = (name) =>
+        name.startsWith('.');
+
+      const listing = (
+        node,
+        showHidden = false
+      ) => {
+        if (!node?.children) {
+          return '(empty)';
+        }
+
+        const entries =
+          Object.entries(node.children)
+            .filter(
+              ([name]) =>
+                showHidden ||
+                !isHidden(name)
+            )
+            .map(
+              ([name, child]) =>
+                child.type === 'file'
+                  ? `<span class="ls-file">${esc(
+                      name
+                    )}</span>`
+                  : `<span class="ls-dir">${esc(
+                      name
+                    )}/</span>`
+            );
+
+        return (
+          entries.join('  ') ||
+          '(empty)'
+        );
+      };
+
+      /*
+       * --------------------------------------------------------
+       * TREE
+       * --------------------------------------------------------
+       */
+
+      const renderTree = (
+        node,
+        prefix = '',
+        showHidden = false
+      ) => {
+        if (
+          !node ||
+          node.type === 'file' ||
+          !node.children
+        ) {
+          return '';
+        }
+
+        const keys =
+          Object.keys(node.children)
+            .filter(
+              (key) =>
+                showHidden ||
+                !isHidden(key)
+            );
+
+        return keys
+          .map((key, index) => {
+            const last =
+              index === keys.length - 1;
+
+            const child =
+              node.children[key];
+
+            const branch =
+              prefix +
+              (last ? '└── ' : '├── ') +
+              (
+                child.type === 'file'
+                  ? key
+                  : `${key}/`
+              );
+
+            const nested =
+              child.type !== 'file'
+                ? renderTree(
+                    child,
+                    prefix +
+                      (
+                        last
+                          ? '    '
+                          : '│   '
+                      ),
+                    showHidden
+                  )
+                : '';
+
+            return nested
+              ? `${branch}\n${nested}`
+              : branch;
+          })
+          .join('\n');
+      };
+
+      /*
+       * --------------------------------------------------------
+       * HELP
+       * --------------------------------------------------------
+       */
+
+      const HELP = [
+        ['help', 'show this list'],
+        ['ls [-a] [path]', 'list directory contents'],
+        ['cd [path]', 'change directory'],
+        ['cat <file>', 'print file contents'],
+        ['pwd', 'print working directory'],
+        ['whoami', 'about me'],
+        ['tree [-a]', 'show filesystem tree'],
+        ['history', 'command history'],
+        ['open <slug>', 'project links'],
+        ['contact', 'show contact info'],
+        ['neofetch', 'system info'],
+        ['clear', 'clear screen'],
+        ['gui', 'switch to graphical mode'],
+      ];
+
+      /*
+       * --------------------------------------------------------
+       * COMMAND EXECUTION
+       * --------------------------------------------------------
+       */
+
+      const run = (raw) => {
+        const commandLine = raw.trim();
+
+        if (!commandLine) {
+          return;
+        }
+
+        echo(raw);
+
+        history.push(raw);
+        historyIndex = history.length;
+
+        const parts =
+          commandLine.split(/\s+/);
+
+        const command = parts[0];
+        const args = parts.slice(1);
+
+        const flags =
+          args.filter((arg) =>
+            arg.startsWith('-')
+          );
+
+        const positional =
+          args.filter(
+            (arg) =>
+              !arg.startsWith('-')
+          );
+
+        const arg =
+          positional.join(' ');
+
+        switch (command) {
+          /*
+           * HELP
+           */
+
+          case 'help':
+            print(
+              HELP
+                .map(
+                  ([cmd, description]) =>
+                    `&nbsp;&nbsp;<span class="ls-file">${esc(
+                      cmd
+                    )}</span> — ${esc(
+                      description
+                    )}`
+                )
+                .join('<br>')
+            );
+
+            break;
+
+          /*
+           * LS
+           */
+
+          case 'ls': {
+            const showHidden =
+              flags.some((flag) =>
+                flag.includes('a')
+              );
+
+            const target =
+              arg
+                ? resolvePath(arg)
+                : cwd;
+
+            const node =
+              getNode(target);
+
+            if (!node) {
+              print(
+                `ls: cannot access '${esc(
+                  arg
+                )}': No such file or directory`,
+                'term-error'
+              );
+
+              break;
+            }
+
+            if (node.type === 'file') {
+              print(
+                esc(
+                  arg ||
+                    pathLabel()
+                )
+              );
+
+              break;
+            }
+
+            print(
+              listing(
+                node,
+                showHidden
+              )
+            );
+
+            break;
+          }
+
+          /*
+           * CD
+           */
+
+          case 'cd': {
+            if (
+              !arg ||
+              arg === '~' ||
+              arg === '/'
+            ) {
+              cwd = [];
+              updatePrompt();
+
+              break;
+            }
+
+            const target =
+              resolvePath(arg);
+
+            const node =
+              getNode(target);
+
+            if (!node) {
+              print(
+                `cd: no such file or directory: ${esc(
+                  arg
+                )}`,
+                'term-error'
+              );
+
+              break;
+            }
+
+            /*
+             * Secret directory
+             */
+
+            if (node.type === 'secret') {
+              print(
+                'accessing restricted path… requesting confirmation.'
+              );
+
+              document.dispatchEvent(
+                new CustomEvent(
+                  'personal-space-enter'
+                )
+              );
+
+              break;
+            }
+
+            /*
+             * File
+             */
+
+            if (node.type === 'file') {
+              print(
+                `cd: not a directory: ${esc(
+                  arg
+                )}`,
+                'term-error'
+              );
+
+              break;
+            }
+
+            cwd = target;
+
+            updatePrompt();
+
+            break;
+          }
+
+          /*
+           * CAT
+           */
+
+          case 'cat': {
+            if (!arg) {
+              print(
+                'usage: cat &lt;file&gt;',
+                'term-error'
+              );
+
+              break;
+            }
+
+            const target =
+              resolvePath(arg);
+
+            const node =
+              getNode(target);
+
+            if (!node) {
+              print(
+                `cat: ${esc(
+                  arg
+                )}: No such file or directory`,
+                'term-error'
+              );
+
+              break;
+            }
+
+            /*
+             * Secret file
+             */
+
+            if (
+              node.type === 'secret'
+            ) {
+              print(
+                'this file requires interactive confirmation. ' +
+                'try: <span class="ls-file">' +
+                'cd .config/belal_XD' +
+                '</span>'
+              );
+
+              break;
+            }
+
+            /*
+             * Directory
+             */
+
+            if (node.type === 'dir') {
+              print(
+                `cat: ${esc(
+                  arg
+                )}: Is a directory`,
+                'term-error'
+              );
+
+              break;
+            }
+
+            /*
+             * File
+             */
+
+            print(
+              `<pre class="cat-output">${esc(
+                node.content || ''
+              )}</pre>`
+            );
+
+            break;
+          }
+
+          /*
+           * PWD
+           */
+
+          case 'pwd':
+            print(
+              esc(pathLabel())
+            );
+
+            break;
+
+          /*
+           * WHOAMI
+           */
+
+          case 'whoami':
+            print(
+              'belal — SOC Analyst &amp; Cybersecurity student. ' +
+              'Run <span class="ls-file">cat about.txt</span> for more.'
+            );
+
+            break;
+
+          /*
+           * TREE
+           */
+
+          case 'tree': {
+            const showHidden =
+              flags.some((flag) =>
+                flag.includes('a')
+              );
+
+            print(
+              `<pre class="cat-output">~\n${esc(
+                renderTree(
+                  fs,
+                  '',
+                  showHidden
+                )
+              )}</pre>`
+            );
+
+            break;
+          }
+
+          /*
+           * HISTORY
+           */
+
+          case 'history':
+            print(
+              history
+                .map(
+                  (entry, index) =>
+                    `${index + 1}  ${esc(
+                      entry
+                    )}`
+                )
+                .join('<br>') ||
+                '(empty)'
+            );
+
+            break;
+
+          /*
+           * CONTACT
+           */
+
+          case 'contact':
+            run('cat contact.txt');
+
+            /*
+             * `run()` already adds the fake
+             * cat command to history, so remove it.
+             */
+
+            history.pop();
+            historyIndex =
+              history.length;
+
+            break;
+
+          /*
+           * OPEN PROJECT
+           */
+
+          case 'open': {
+            if (!arg) {
+              print(
+                'usage: open &lt;slug&gt;',
+                'term-error'
+              );
+
+              break;
+            }
+
+            const project =
+              projectsList.find(
+                (item) =>
+                  item.slug === arg
+              );
+
+            if (!project) {
+              print(
+                `open: unknown project '${esc(
+                  arg
+                )}'. try 'ls projects'`,
+                'term-error'
+              );
+
+              break;
+            }
+
+            const links = [
+              project.github
+                ? `github: ${project.github}`
+                : null,
+
+              project.liveDemo
+                ? `demo: ${project.liveDemo}`
+                : null,
+            ]
+              .filter(Boolean)
+              .join('\n');
+
+            print(
+              `<pre class="cat-output">${esc(
+                links ||
+                  'no public links yet.'
+              )}</pre>`
+            );
+
+            break;
+          }
+
+          /*
+           * NEOFETCH
+           */
+
+          case 'neofetch':
+            print(
+              `<pre class="cat-output">belal@portfolio
+-----------------
+OS: Arch Linux
+WM: sway
+Terminal: foot
+Shell: portfolio-sh
+Role: SOC Analyst &amp; Cybersecurity Student</pre>`
+            );
+
+            break;
+
+          /*
+           * SUDO
+           */
+
+          case 'sudo':
+            print(
+              'belal is not in the sudoers file. This incident will be reported.',
+              'term-error'
+            );
+
+            break;
+
+          /*
+           * CLEAR
+           */
+
+          case 'clear':
+            out.replaceChildren();
+
+            break;
+
+          /*
+           * GUI / EXIT
+           */
+
+          case 'gui':
+          case 'exit':
+          case 'back':
+          case 'logout':
+            print(
+              'switching to graphical mode…'
+            );
+
+            setTimeout(() => {
+              sessionStorage.setItem(
+                'portfolio-mode',
+                'graphical'
+              );
+
+              document.dispatchEvent(
+                new CustomEvent(
+                  'mode-selected',
+                  {
+                    detail: {
+                      mode: 'graphical',
+                    },
+                  }
+                )
+              );
+            }, 200);
+
+            break;
+
+          /*
+           * UNKNOWN COMMAND
+           */
+
+          default:
+            print(
+              `command not found: ${esc(
+                command
+              )} (try 'help')`,
+              'term-error'
+            );
+        }
+      };
+
+      /*
+       * --------------------------------------------------------
+       * TAB COMPLETION
+       * --------------------------------------------------------
+       */
+
+      const completions = [
+        'help',
+        'ls',
+        'cd',
+        'cat',
+        'pwd',
+        'whoami',
+        'tree',
+        'history',
+        'open',
+        'contact',
+        'neofetch',
+        'clear',
+        'gui',
+        'exit',
+      ];
+
+      const complete = () => {
+        const value =
+          input.value;
+
+        const parts =
+          value.split(' ');
+
+        const last =
+          parts.at(-1) || '';
+
+        /*
+         * Command completion
+         */
+
+        if (parts.length === 1) {
+          const matches =
+            completions.filter(
+              (cmd) =>
+                cmd.startsWith(last)
+            );
+
+          if (matches.length === 1) {
+            input.value =
+              `${matches[0]} `;
+          } else if (
+            matches.length > 1
+          ) {
+            print(
+              matches.join('  ')
+            );
+          }
+
+          return;
+        }
+
+        /*
+         * Filesystem completion
+         */
+
+        const node =
+          getNode(cwd);
+
+        if (
+          !node?.children
+        ) {
+          return;
+        }
+
+        const matches =
+          Object.keys(
+            node.children
+          ).filter(
+            (name) =>
+              name.startsWith(last) &&
+              !isHidden(name)
+          );
+
+        if (matches.length === 1) {
+          parts[
+            parts.length - 1
+          ] = matches[0];
+
+          input.value =
+            parts.join(' ');
+        } else if (
+          matches.length > 1
+        ) {
+          print(
+            matches.join('  ')
+          );
+        }
+      };
+
+      /*
+       * --------------------------------------------------------
+       * FORM
+       * --------------------------------------------------------
+       */
+
+      form.addEventListener(
+        'submit',
+        (event) => {
+          event.preventDefault();
+
+          console.log(
+            '[terminal] submit:',
+            input.value
+          );
+
+          const value =
+            input.value;
+
+          input.value = '';
+
+          run(value);
+        }
+      );
+
+      /*
+       * --------------------------------------------------------
+       * KEYBOARD
+       * --------------------------------------------------------
+       */
+
+      input.addEventListener(
+        'keydown',
+        (event) => {
+          /*
+           * History up
+           */
+
+          if (
+            event.key === 'ArrowUp'
+          ) {
+            event.preventDefault();
+
+            if (
+              historyIndex > 0
+            ) {
+              historyIndex--;
+
+              input.value =
+                history[
+                  historyIndex
+                ] || '';
+            }
+
+            return;
+          }
+
+          /*
+           * History down
+           */
+
+          if (
+            event.key === 'ArrowDown'
+          ) {
+            event.preventDefault();
+
+            if (
+              historyIndex <
+              history.length - 1
+            ) {
+              historyIndex++;
+
+              input.value =
+                history[
+                  historyIndex
+                ] || '';
+            } else {
+              historyIndex =
+                history.length;
+
+              input.value = '';
+            }
+
+            return;
+          }
+
+          /*
+           * Tab completion
+           */
+
+          if (
+            event.key === 'Tab'
+          ) {
+            event.preventDefault();
+
+            complete();
+
+            return;
+          }
+        }
+      );
+
+      /*
+       * --------------------------------------------------------
+       * FOCUS
+       * --------------------------------------------------------
+       */
+
+      root.addEventListener(
+        'click',
+        () => {
+          input.focus();
+        }
+      );
+
+      /*
+       * --------------------------------------------------------
+       * INITIAL STATE
+       * --------------------------------------------------------
+       */
+
+      updatePrompt();
+
+      /*
+       * --------------------------------------------------------
+       * MODE SWITCHING
+       * --------------------------------------------------------
+       */
+
+      document.addEventListener(
+        'mode-selected',
+        (event) => {
+          if (
+            event.detail?.mode !==
+            'terminal'
+          ) {
+            return;
+          }
+
+          if (!booted) {
+            booted = true;
+
+            print(
+              'Welcome to <span class="ls-file">' +
+              'belal@portfolio' +
+              '</span>. Type <span class="ls-file">' +
+              'help' +
+              '</span> to get started.'
+            );
+          }
+
+          setTimeout(() => {
+            input.focus();
+          }, 50);
+        }
+      );
+
+      console.log(
+        '[terminal] fully initialized'
+      );
+    }
+  }
+</script>

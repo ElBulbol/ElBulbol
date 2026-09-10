@@ -8,6 +8,7 @@ import TeachingMentorship from '../components/TeachingMentorship.astro';
 import CurrentlyLearning from '../components/CurrentlyLearning.astro';
 import Footer from '../components/Footer.astro';
 import PersonalCorner from '../components/PersonalCorner.astro';
+import TerminalMode from '../components/TerminalMode.astro';
 ---
 
 <BaseLayout>
@@ -36,29 +37,8 @@ import PersonalCorner from '../components/PersonalCorner.astro';
     <CurrentlyLearning />
     <Footer />
   </div>
-
   <!-- Terminal Mode Island -->
-  <div id="mode-terminal" class="mode-container" aria-hidden="true">
-    <div class="terminal-island">
-      <div class="terminal-header">
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="title">belal@portfolio ~</span>
-      </div>
-      <div class="terminal-body">
-        <p class="term-line"><span class="prompt">[belal@portfolio ~]$</span> ls -l</p>
-        <p class="term-line output">
-          <span class="dir">drwxr-xr-x</span> 2 belal root 4096 <span class="dir-name">projects</span><br/>
-          <span class="dir">drwxr-xr-x</span> 2 belal root 4096 <span class="dir-name">skills</span><br/>
-          <span class="file">-rw-r--r--</span> 1 belal root 1024 <span class="file-name">about.txt</span><br/>
-          <span class="file">-rw-r--r--</span> 1 belal root  512 <span class="file-name">contact.txt</span>
-        </p>
-        <p class="term-line"><span class="prompt">[belal@portfolio ~]$</span> <span class="cursor-block"></span></p>
-      </div>
-    </div>
-  </div>
-
+   <TerminalMode />
   <div id="personal-mode" aria-hidden="true" hidden>
     <PersonalCorner />
   </div>
