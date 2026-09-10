@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PersonalCorner from '../../components/PersonalCorner.astro';
+
+export function getStaticPaths() {
+  return [{ params: { path: '.config/belal_XD' } }];
+}
+---
+
+<BaseLayout title="Belal // Off the Record" description="Belal's personal corner.">
+  <section class="personal-page"><PersonalCorner /></section>
+</BaseLayout>
+
+<style>
+  .personal-page { box-sizing:border-box; min-height:100vh; padding:clamp(5rem,12vh,9rem) 1rem 3rem; }
+</style>

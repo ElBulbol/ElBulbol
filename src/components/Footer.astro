@@ -40,10 +40,22 @@ const isPrimaryContact = (label: string) => label === 'email' || label === 'disc
 
     <p class="closing-line" aria-live="polite"><span>[belal@portfolio ~]$</span> <span data-closing-copy>echo "thanks for stopping by"</span></p>
   </div>
+  <aside class="footer-secret" aria-label="A hidden personal corner">
+    <button class="footer-secret-trigger" type="button" aria-expanded="false" aria-controls="footer-secret-dialog" aria-label="A small hidden signal. Reveal it." data-footer-secret-trigger>
+      <span class="footer-secret-sprite" aria-hidden="true"></span>
+      <span class="footer-secret-invite" aria-hidden="true"><small>signal detected <i>_</i></small><span>Do you want to know more about me?</span><em>[ explore ↵ ]</em></span>
+    </button>
+  </aside>
+  <div class="footer-secret-overlay" data-footer-secret-overlay aria-hidden="true" hidden>
+    <section id="footer-secret-dialog" class="footer-secret-dialog" role="dialog" aria-modal="true" aria-labelledby="footer-secret-title" aria-describedby="footer-secret-copy" tabindex="-1">
+      <header><span>[belal@portfolio ~]$ access ~/.config/belal_XD</span><button type="button" data-footer-secret-close aria-label="Close personal-space confirmation">×</button></header>
+      <form data-footer-secret-form><span>~/lancer/heads-up</span><h2 id="footer-secret-title">Lancer // Personal-only space</h2><p id="footer-secret-copy">Everything past this point is about Belal — interests, hobbies, small stories, and whatever catches his attention. It is not the technical portfolio.</p><label for="footer-secret-confirmation">Type <code>I know</code> to continue.</label><div><input id="footer-secret-confirmation" data-footer-secret-input autocomplete="off" spellcheck="false" placeholder="I know" /><button type="submit" data-footer-secret-submit disabled>enter ↵</button></div><small data-footer-secret-status aria-live="polite">waiting for acknowledgement</small></form>
+    </section>
+  </div>
 </footer>
 
 <style>
-  .site-footer { background:var(--bg-panel-solid); border-top:1px solid var(--border); padding:4rem 2rem 2.5rem; }
+  .site-footer { background:var(--bg-panel-solid); border-top:1px solid var(--border); padding:4rem 2rem 2.5rem; position:relative; }
   .footer-container { margin:0 auto; max-width:1320px; text-align:center; width:100%; }
   .footer-heading { align-items:baseline; display:flex; gap:.7rem; justify-content:center; }.terminal-prompt { color:var(--accent); font-size:clamp(.8rem,1.2vw,1rem); font-weight:700; white-space:nowrap; }.footer-heading h2 { color:var(--text-primary); font-size:clamp(1.25rem,2vw,1.65rem); margin:0; }
   .contact-output { display:flex; flex-wrap:wrap; gap:1.25rem 1.75rem; justify-content:center; margin:2.25rem auto 0; max-width:980px; }.contact-card { width:142px; }.contact-link { align-items:center; color:var(--text-muted); display:flex; flex-direction:column; gap:.4rem; position:relative; text-decoration:none; transition:color 180ms ease,transform 180ms ease; }.contact-link:hover,.contact-link:focus-visible { color:var(--text-primary); outline:none; transform:translateY(-3px); }.contact-symbol { align-items:center; display:grid; height:58px; justify-items:center; transition:filter 180ms ease,transform 180ms ease; width:58px; }.contact-logo { grid-area:1 / 1; height:42px; overflow:visible; width:42px; }.logo-fill { fill:var(--text-primary); stroke:var(--text-primary); stroke-linecap:round; stroke-linejoin:round; }.icon-email .logo-fill { fill:none; stroke-width:1.45; }.logo-trace { animation:none; fill:var(--accent); opacity:0; stroke:none; }.icon-email .logo-trace { fill:none; stroke:var(--accent); stroke-width:1.7; }.tryhackme-logo { display:grid; height:42px; place-items:center; position:relative; width:64px; }.tryhackme-logo img { filter:brightness(0) invert(1) opacity(.84); height:100%; max-width:100%; object-fit:contain; }.tryhackme-logo::after { animation:none; background:var(--accent); content:''; inset:0; mask:center / contain no-repeat url('https://tryhackme.com/img/logo/THMlogo-gray_scale.png'); -webkit-mask:center / contain no-repeat url('https://tryhackme.com/img/logo/THMlogo-gray_scale.png'); opacity:0; position:absolute; }.contact-label { color:var(--text-primary); font-size:12px; font-weight:600; text-transform:uppercase; }.contact-value { color:var(--text-muted-2); font-size:10px; line-height:1.5; overflow-wrap:anywhere; }.external-mark { color:var(--text-muted-2); font-size:11px; position:absolute; right:7px; top:44px; transition:color 180ms ease,transform 180ms ease; }.contact-link:hover .contact-symbol,.contact-link:focus-visible .contact-symbol { filter:drop-shadow(0 0 8px rgba(122,162,247,.3)); transform:scale(1.08); }.contact-link:hover .icon-linkedin,.contact-link:focus-visible .icon-linkedin { filter:none; }.contact-link:hover .logo-fill,.contact-link:focus-visible .logo-fill { fill:var(--accent); stroke:var(--accent); }.contact-link:hover .logo-trace,.contact-link:focus-visible .logo-trace { animation:logo-glow 760ms ease-out; }.contact-link:hover .icon-linkedin .logo-trace,.contact-link:focus-visible .icon-linkedin .logo-trace { animation:linkedin-glow 620ms ease-out; }.contact-link:hover .tryhackme-logo::after,.contact-link:focus-visible .tryhackme-logo::after { animation:logo-glow 760ms ease-out; }.contact-link:hover .external-mark,.contact-link:focus-visible .external-mark { color:var(--accent); transform:translate(2px,-2px) rotate(10deg); }.contact-card.is-primary .contact-link:hover,.contact-card.is-primary .contact-link:focus-visible { transform:translateY(-5px); }.contact-card.is-primary .contact-link:hover .contact-symbol,.contact-card.is-primary .contact-link:focus-visible .contact-symbol { filter:drop-shadow(0 0 11px rgba(125,207,255,.42)); transform:scale(1.12); }.contact-card.is-primary .contact-link:hover .logo-trace,.contact-card.is-primary .contact-link:focus-visible .logo-trace { animation-duration:900ms; }.contact-card.is-primary .contact-link:hover .tryhackme-logo::after,.contact-card.is-primary .contact-link:focus-visible .tryhackme-logo::after { animation-duration:900ms; }
@@ -56,6 +68,11 @@ const isPrimaryContact = (label: string) => label === 'email' || label === 'disc
   .tryhackme-logo { align-items:center; border:1px solid currentColor; color:var(--text-primary); display:flex; font-size:16px; font-weight:800; height:30px; justify-content:center; letter-spacing:.08em; transition:color 180ms ease,box-shadow 180ms ease; width:54px; }
   .tryhackme-logo::after { content:none; }
   .contact-link:hover .tryhackme-logo,.contact-link:focus-visible .tryhackme-logo { box-shadow:0 0 10px rgba(122,162,247,.35); color:var(--accent); }
+  .footer-secret { bottom:0; display:flex; justify-content:flex-start; left:0; overflow:hidden; position:absolute; width:min(100%,342px); }.footer-secret-trigger { align-items:center; appearance:none; background:transparent; border:0; color:var(--text-primary); cursor:pointer; display:flex; font:inherit; gap:.7rem; height:104px; overflow:hidden; padding:0; text-align:left; transition:width 260ms cubic-bezier(.2,.8,.2,1); width:34px; }.footer-secret-sprite { align-self:flex-end; background:center/104px 104px no-repeat url('../../lancer-deltarune.gif'); display:block; flex:0 0 104px; height:104px; transform:translateX(-70px); transition:transform 260ms cubic-bezier(.2,.8,.2,1); }.footer-secret-invite { border-left:1px solid var(--border-strong); display:grid; flex:0 0 226px; gap:.2rem; opacity:0; padding:.15rem 0 .15rem .7rem; transform:translateX(-8px); transition:opacity 130ms ease 40ms,transform 220ms ease 40ms; }.footer-secret-invite small { color:var(--text-muted-2); font-size:10px; letter-spacing:.04em; }.footer-secret-invite i { animation:footer-secret-cursor .8s steps(1,end) infinite; color:var(--accent); font-style:normal; }.footer-secret-invite span { color:var(--text-primary); font-size:11px; line-height:1.45; }.footer-secret-invite em { color:var(--accent); font-size:10px; font-style:normal; margin-top:.15rem; }.footer-secret:hover .footer-secret-trigger,.footer-secret:focus-within .footer-secret-trigger,.footer-secret.is-revealed .footer-secret-trigger { width:332px; }.footer-secret:hover .footer-secret-sprite,.footer-secret:focus-within .footer-secret-sprite,.footer-secret.is-revealed .footer-secret-sprite { transform:none; }.footer-secret:hover .footer-secret-invite,.footer-secret:focus-within .footer-secret-invite,.footer-secret.is-revealed .footer-secret-invite { opacity:1; transform:none; }.footer-secret-trigger:focus-visible { outline:1px solid var(--accent); outline-offset:3px; }
+  :global(body.footer-secret-open) { overflow:hidden; }.footer-secret-overlay { align-items:center; background:rgba(3,4,8,.82); display:flex; inset:0; justify-content:center; opacity:0; padding:1rem; pointer-events:none; position:fixed; transition:opacity 180ms ease; z-index:var(--z-overlay); }.footer-secret-overlay[hidden] { display:none; }.footer-secret-overlay.is-open { opacity:1; pointer-events:auto; }.footer-secret-dialog { background:var(--bg-panel-solid); border:1px solid var(--border-strong); box-shadow:0 20px 70px rgba(0,0,0,.6); max-width:540px; opacity:0; transform:translateY(10px) scale(.985); transition:opacity 180ms ease,transform 180ms ease; width:100%; }.footer-secret-overlay.is-open .footer-secret-dialog { opacity:1; transform:none; }.footer-secret-dialog header { align-items:center; background:rgba(122,162,247,.035); border-bottom:1px solid var(--border); color:var(--text-muted-2); display:flex; font-size:10px; justify-content:space-between; padding:.6rem .8rem; }.footer-secret-dialog header button { background:transparent; border:0; color:var(--text-muted); cursor:pointer; font:inherit; font-size:19px; line-height:1; }.footer-secret-dialog header button:focus-visible { outline:1px solid var(--accent); }.footer-secret-dialog form { display:grid; gap:.8rem; padding:1.5rem; text-align:left; }.footer-secret-dialog form > span { color:var(--accent); font-size:10px; }.footer-secret-dialog h2 { color:var(--text-primary); font-size:clamp(1.25rem,3vw,1.7rem); letter-spacing:-.04em; margin:0; }.footer-secret-dialog p { color:var(--text-muted); font-size:12px; line-height:1.75; margin:0; }.footer-secret-dialog label { color:var(--text-muted); font-size:11px; margin-top:.35rem; }.footer-secret-dialog code { color:var(--accent); font-family:inherit; }.footer-secret-dialog form > div { display:flex; }.footer-secret-dialog input { background:var(--bg-base); border:1px solid var(--border); border-right:0; color:var(--text-primary); font:inherit; font-size:12px; min-width:0; outline:none; padding:.7rem; width:100%; }.footer-secret-dialog input:focus { border-color:var(--accent); }.footer-secret-dialog form > div button { background:var(--accent); border:1px solid var(--accent); color:var(--bg-base); cursor:pointer; font:inherit; font-size:11px; padding:.7rem .9rem; }.footer-secret-dialog form > div button:disabled { background:var(--border); border-color:var(--border); color:var(--text-muted-2); cursor:not-allowed; }.footer-secret-dialog form > small { color:var(--text-muted-2); font-size:10px; }.footer-secret-dialog form > small.is-ready { color:var(--term-green); }
+  @keyframes footer-secret-cursor { 50% { opacity:0; } }
+  @media (max-width:640px) { .footer-secret { bottom:0; width:294px; }.footer-secret-trigger { height:92px; width:30px; }.footer-secret-sprite { background-size:92px 92px; flex-basis:92px; height:92px; transform:translateX(-62px); }.footer-secret-invite { flex-basis:210px; }.footer-secret.is-revealed .footer-secret-trigger { width:294px; }.footer-secret.is-revealed .footer-secret-sprite { transform:none; }.footer-secret.is-revealed .footer-secret-invite { opacity:1; transform:none; } }
+  @media (prefers-reduced-motion:reduce) { .footer-secret-trigger,.footer-secret-sprite,.footer-secret-invite,.footer-secret-overlay,.footer-secret-dialog { transition:none; }.footer-secret-invite i { animation:none; } }
 </style>
 
 <script>
@@ -95,4 +112,72 @@ const isPrimaryContact = (label: string) => label === 'email' || label === 'disc
       observer.observe(output);
     }
   }
+</script>
+
+<script>
+  const footerSecret = document.querySelector('.footer-secret');
+  const footerSecretTrigger = document.querySelector('[data-footer-secret-trigger]') as HTMLButtonElement | null;
+  const footerSecretOverlay = document.querySelector('[data-footer-secret-overlay]') as HTMLElement | null;
+  const footerSecretInput = document.querySelector('[data-footer-secret-input]') as HTMLInputElement | null;
+  const footerSecretSubmit = document.querySelector('[data-footer-secret-submit]') as HTMLButtonElement | null;
+  const footerSecretForm = document.querySelector('[data-footer-secret-form]') as HTMLFormElement | null;
+  const footerSecretClose = document.querySelector('[data-footer-secret-close]') as HTMLButtonElement | null;
+  const footerSecretDialog = document.querySelector('#footer-secret-dialog') as HTMLElement | null;
+  const footerSecretStatus = document.querySelector('[data-footer-secret-status]') as HTMLElement | null;
+  const footerSecretReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const footerSecretTouch = window.matchMedia('(pointer: coarse)').matches;
+  let footerSecretLastFocus: HTMLElement | null = null;
+
+  const revealFooterSecret = () => footerSecret?.classList.add('is-revealed');
+  const closeFooterSecret = () => {
+    if (!footerSecretOverlay || !footerSecretTrigger) return;
+    footerSecretOverlay.classList.remove('is-open');
+    footerSecretOverlay.setAttribute('aria-hidden', 'true');
+    footerSecretTrigger.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('footer-secret-open');
+    window.setTimeout(() => { footerSecretOverlay.hidden = true; }, footerSecretReducedMotion ? 0 : 180);
+    footerSecretLastFocus?.focus();
+  };
+  const openFooterSecret = () => {
+    if (!footerSecretOverlay || !footerSecretTrigger) return;
+    footerSecretLastFocus = document.activeElement instanceof HTMLElement ? document.activeElement : footerSecretTrigger;
+    if (footerSecretInput) footerSecretInput.value = '';
+    if (footerSecretSubmit) footerSecretSubmit.disabled = true;
+    footerSecretStatus?.classList.remove('is-ready');
+    if (footerSecretStatus) footerSecretStatus.textContent = 'waiting for acknowledgement';
+    footerSecretOverlay.hidden = false;
+    window.requestAnimationFrame(() => footerSecretOverlay.classList.add('is-open'));
+    footerSecretOverlay.setAttribute('aria-hidden', 'false');
+    footerSecretTrigger.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('footer-secret-open');
+    window.setTimeout(() => footerSecretInput?.focus(), footerSecretReducedMotion ? 0 : 180);
+  };
+
+  footerSecretTrigger?.addEventListener('focus', revealFooterSecret);
+  footerSecretTrigger?.addEventListener('click', () => {
+    if (footerSecretTouch && !footerSecret?.classList.contains('is-revealed')) { revealFooterSecret(); return; }
+    openFooterSecret();
+  });
+  footerSecretInput?.addEventListener('input', () => {
+    const ready = footerSecretInput.value.trim().toLowerCase() === 'i know';
+    if (footerSecretSubmit) footerSecretSubmit.disabled = !ready;
+    footerSecretStatus?.classList.toggle('is-ready', ready);
+    if (footerSecretStatus) footerSecretStatus.textContent = ready ? 'acknowledgement received — access unlocked' : 'waiting for acknowledgement';
+  });
+  footerSecretForm?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    if (!footerSecretSubmit?.disabled) window.location.assign('/~/.config/belal_XD');
+  });
+  footerSecretClose?.addEventListener('click', closeFooterSecret);
+  footerSecretOverlay?.addEventListener('click', (event) => { if (event.target === footerSecretOverlay) closeFooterSecret(); });
+  document.addEventListener('keydown', (event) => {
+    if (!footerSecretOverlay?.classList.contains('is-open')) return;
+    if (event.key === 'Escape') { event.preventDefault(); closeFooterSecret(); return; }
+    if (event.key !== 'Tab' || !footerSecretDialog) return;
+    const items = [...footerSecretDialog.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled])')];
+    const first = items[0]; const last = items[items.length - 1];
+    if (!first || !last) return;
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  });
 </script>
